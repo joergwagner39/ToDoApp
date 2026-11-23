@@ -16,6 +16,9 @@ Einfache ToDo-App mit zwei getrennten Bereichen: **Beruflich** und **Privat**.
 - **Favoriten:** Spieler mit ☆ markieren – sie stehen oben, die übrigen lassen sich einklappen.
 - **Reihenfolge:** Über „⇅ Reihenfolge“ Spieler mit Pfeilen oder per Ziehen verschieben.
 - **Sonstige Aufgaben:** berufliche Aufgaben ohne festen Spieler (Termine, Vereine & Verträge, Büro).
+- **Claude-Assistent (✨):** Befehle in Alltagssprache eintippen, z. B. „Freitag 15 Uhr Zahnarzt“ oder
+  „Bis Mittwoch Versicherungsunterlagen von Conté anfordern, dringend“. Claude schlägt Aufgaben, Termine,
+  Erledigt-Markierungen oder Spielerdaten vor; übernommen wird erst nach Bestätigung. Nur im Claude-Artifact verfügbar.
 - **Kalender:** Monatsansicht mit beruflichen und privaten Terminen, einzeln oder überlagert, optional mit fälligen Aufgaben. Termine können einem Spieler zugeordnet werden und erscheinen dann auch auf seiner Seite.
 - **Privat:** eigene Aufgabenliste, gruppiert nach Haushalt, Finanzen, Gesundheit, Familie, Termine, Einkaufen, Sonstiges.
 - Aufgabe per Doppelklick bearbeiten, Spieler hinzufügen / umbenennen / entfernen.

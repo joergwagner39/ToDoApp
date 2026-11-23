@@ -23,6 +23,7 @@
     --on-accent: #ffffff;
     --privat: #7c3aed;
     --privat-soft: #f1eafe;
+    --ai: #d9480f;
     --amp-rot: #e03131;
     --amp-gelb: #f0a500;
     --amp-gruen: #2f9e44;
@@ -42,7 +43,7 @@
     :root:not([data-theme="light"]) {
       --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
       --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
-      --privat: #b197fc; --privat-soft: #2a2140; --amp-rot: #ff6b6b; --amp-gelb: #ffc531; --amp-gruen: #51cf66; --danger: #f87171; --danger-soft: #3a1e1e;
+      --privat: #b197fc; --privat-soft: #2a2140; --ai: #ff8f5a; --amp-rot: #ff6b6b; --amp-gelb: #ffc531; --amp-gruen: #51cf66; --danger: #f87171; --danger-soft: #3a1e1e;
       --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --star: #fcc419; --overlay: rgba(0,0,0,.6);
       --shadow: 0 1px 2px rgba(0,0,0,.4);
       color-scheme: dark;
@@ -51,7 +52,7 @@
   :root[data-theme="dark"] {
     --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
     --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
-    --privat: #b197fc; --privat-soft: #2a2140; --amp-rot: #ff6b6b; --amp-gelb: #ffc531; --amp-gruen: #51cf66; --danger: #f87171; --danger-soft: #3a1e1e;
+    --privat: #b197fc; --privat-soft: #2a2140; --ai: #ff8f5a; --amp-rot: #ff6b6b; --amp-gelb: #ffc531; --amp-gruen: #51cf66; --danger: #f87171; --danger-soft: #3a1e1e;
     --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --star: #fcc419; --overlay: rgba(0,0,0,.6);
     --shadow: 0 1px 2px rgba(0,0,0,.4);
     color-scheme: dark;
@@ -271,6 +272,30 @@
   .sw.privat { background: var(--privat); }
   .todo-text .amp-light { width: 8px; height: 8px; box-shadow: none; }
 
+  /* ---------- Claude-Assistent ---------- */
+  .ai-box { background: var(--surface); border: 1px solid color-mix(in srgb, var(--ai) 35%, var(--border)); border-radius: 14px; padding: 12px; margin-bottom: 18px; display: grid; gap: 10px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--ai) 8%, transparent); }
+  .ai-form { display: flex; gap: 8px; align-items: flex-start; }
+  .ai-spark { font-size: 20px; padding-top: 7px; }
+  .ai-form textarea { resize: none; min-height: 40px; line-height: 1.4; flex: 1; }
+  .ai-status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+  .ai-status.err { color: var(--danger); }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--ai); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.5s; } }
+  .ai-examples { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ai-examples .chip { font-weight: 500; }
+  .ai-result { display: grid; gap: 10px; }
+  .ai-answer { margin: 0; padding: 10px 12px; background: var(--surface-2); border-radius: 10px; white-space: pre-wrap; }
+  .ai-acts { display: grid; gap: 6px; }
+  .ai-act { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 9px; cursor: pointer; }
+  .ai-act.privat { border-left-color: var(--privat); }
+  .ai-act input { width: 18px; height: 18px; accent-color: var(--ai); }
+  .ai-ico { width: 22px; text-align: center; color: var(--muted); }
+  .ai-main { display: grid; min-width: 0; }
+  .ai-main small { color: var(--muted); }
+  .ai-buttons { display: flex; justify-content: flex-end; gap: 8px; }
+  .ai-btn { font-size: 15px; }
+
   /* ---------- Termine ---------- */
   .tab.active.kal { background: var(--text); color: var(--surface); }
   .btn.small { padding: 5px 10px; font-size: 13px; }
@@ -364,6 +389,7 @@
       <button class="tab privat" data-route="privat" data-go="#privat"><span class="ico">🏠</span> Privat <span class="count" id="cnt-privat">0</span></button>
       <button class="tab kal" data-route="kalender" data-go="#kalender"><span class="ico">📅</span> Kalender <span class="count" id="cnt-kal">0</span></button>
     </nav>
+    <button class="menu-btn ai-btn" id="aiBtn" title="Claude-Assistent" aria-label="Claude-Assistent öffnen">✨</button>
     <button class="menu-btn" id="menuBtn" title="Daten" aria-haspopup="true">⋯</button>
     <div class="menu" id="menu" hidden>
       <button id="exportBtn">Backup speichern (JSON)</button>
@@ -1221,6 +1247,7 @@ function renderStart() {
   app.innerHTML = `
     <h1>${greet}</h1>
     <p class="sub">${fmtDay(t0, true)} · ${open.length} offene Aufgaben${doneToday ? ` · heute ${doneToday} erledigt` : ''}</p>
+    ${aiPanelHTML()}
 
     <div class="ampel-sum">
       ${AMPEL.map(a => `<div class="amp-card ${a.key}">
@@ -1294,6 +1321,196 @@ function renderStart() {
     save(); renderStart(); document.getElementById('qa-text').focus(); toast('Aufgabe angelegt');
   };
   bindEventClicks();
+  bindAi();
+}
+
+/* =========================================================
+   Claude-Assistent: Befehle in Alltagssprache → Vorschläge
+   ========================================================= */
+const ai = { busy: false, input: '', result: null, error: '', ctl: null };
+let sampleFn;   // undefined = noch unbekannt, null = nicht verfügbar
+(async () => {
+  try { sampleFn = window.claude && window.claude.use ? await window.claude.use('sample') : null; } catch (e) { sampleFn = null; }
+  if (location.hash === '' || location.hash === '#start') safeRender();
+})();
+
+function aiPrompt(cmd) {
+  const d0 = today();
+  const days = [];
+  for (let i = -1; i < 28; i++) { const d = new Date(d0); d.setDate(d0.getDate() + i); days.push(`${ymd(d)} ${d.toLocaleDateString('de-DE', { weekday: 'long' })}${i === 0 ? ' (heute)' : i === 1 ? ' (morgen)' : ''}`); }
+  const players = state.players.map(p => `${p.id}: ${fullName(p)}${p.fav ? ' (Favorit)' : ''}`).join('\n');
+  const openTodos = startItems().filter(x => !x.t.done).map(x => `${x.t.id} | ${x.kind === 'privat' ? 'privat' : x.player ? 'Spieler ' + fullName(x.player) : 'beruflich sonstige'} | ${x.t.text}${x.t.due ? ' | fällig ' + x.t.due : ''}${x.t.prio ? ' | wichtig' : ''}`).join('\n') || '(keine)';
+  const t = ymd(d0);
+  const events = state.termine.filter(e => e.date >= t).sort(evSort).slice(0, 40).map(e => `${e.id} | ${e.date} ${e.time || 'ganztägig'}${e.end ? '-' + e.end : ''} | ${e.kind} | ${e.title}${e.playerId && findPlayer(e.playerId) ? ' | ' + fullName(findPlayer(e.playerId)) : ''}`).join('\n') || '(keine)';
+  const infoFields = AREAS.map(a => `${a.key}: ${a.fields.map(f => f[0] + ' (' + f[1] + ')').join(', ')}`).join('\n');
+  return `Du bist der Assistent in einer deutschsprachigen ToDo- und Kalender-App eines Spielerberaters im Fußball.
+Wandle den Befehl des Nutzers in Aktionen um. Erfinde nichts, was nicht im Befehl steht.
+
+HEUTE: ${t}
+KALENDER (Datum → Wochentag):
+${days.join('\n')}
+
+SPIELER (id: Name):
+${players}
+
+KATEGORIEN
+- Spieler-Aufgaben "bereich": allgemein, ${AREAS.map(a => a.key).join(', ')}, sonstiges
+- Berufliche sonstige Aufgaben "bereich": ${BERUF_CATS.map(c => c.key).join(', ')}
+- Private Aufgaben "bereich": ${PRIVATE_CATS.map(c => c.key).join(', ')}
+
+SPIELERDATEN-FELDER (bereich: feld (Bezeichnung)):
+${infoFields}
+
+OFFENE AUFGABEN (id | wo | text | fällig | wichtig):
+${openTodos}
+
+KOMMENDE TERMINE (id | datum zeit | bereich | titel | spieler):
+${events}
+
+REGELN
+- Ein Termin hat einen festen Zeitpunkt/Tag (Treffen, Gespräch, Arzt, Spiel, Anruf zu einer Uhrzeit). Eine Aufgabe ist etwas zu erledigen, optional mit Frist ("bis Freitag").
+- Nenne der Befehl einen Spieler (auch nur Vor- oder Nachname), nutze dessen id. Berufliches ohne Spieler: ziel "beruf". Privates: ziel "privat".
+- Relative Angaben ("morgen", "nächsten Dienstag", "in 2 Wochen") über die KALENDER-Tabelle auflösen. Uhrzeiten als HH:MM. Ohne Uhrzeit: ganztägig ("").
+- "dringend"/"wichtig"/"asap" → wichtig: true.
+- "erledigt"/"abhaken" bezieht sich auf eine OFFENE AUFGABE → typ "erledigt" mit deren id.
+- Informationen über einen Spieler (Adresse, Kennzeichen, Versicherung, Steuerberater …) → typ "info".
+- Fragen ("Was steht morgen an?") beantwortest du nur im Feld "antwort", ohne Aktionen.
+- Formuliere Texte kurz und klar auf Deutsch.
+
+Antworte NUR mit JSON in genau dieser Form:
+{"antwort": "ein kurzer Satz an den Nutzer",
+ "aktionen": [
+  {"typ":"aufgabe","text":"…","ziel":"privat|beruf|<spieler-id>","bereich":"…","faellig":"YYYY-MM-DD oder leer","wichtig":false},
+  {"typ":"termin","titel":"…","datum":"YYYY-MM-DD","von":"HH:MM oder leer","bis":"HH:MM oder leer","bereich":"beruf|privat","spieler":"<spieler-id> oder leer","ort":"… oder leer"},
+  {"typ":"erledigt","id":"<aufgaben-id>"},
+  {"typ":"info","spieler":"<spieler-id>","bereich":"<bereich>","feld":"<feld>","wert":"…"}
+ ]}
+
+BEFEHL DES NUTZERS:
+${cmd}`;
+}
+
+const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !isNaN(parseYmd(s));
+const isTime = s => /^([01]\d|2[0-3]):[0-5]\d$/.test(s || '');
+// Antwort prüfen und in anwendbare Aktionen übersetzen
+function aiValidate(res) {
+  const out = [];
+  const list = Array.isArray(res && res.aktionen) ? res.aktionen : [];
+  for (const a of list.slice(0, 20)) {
+    if (!a || typeof a !== 'object') continue;
+    if (a.typ === 'aufgabe' && String(a.text || '').trim()) {
+      let owner = a.ziel === 'privat' ? '__privat' : findPlayer(a.ziel) ? a.ziel : '__beruf';
+      const cats = owner === '__privat' ? PRIVATE_CATS : owner === '__beruf' ? BERUF_CATS : PLAYER_CATS;
+      const cat = cats.some(c => c.key === a.bereich) ? a.bereich : (owner === '__privat' ? 'sonstiges' : 'allgemein');
+      out.push({ typ: 'aufgabe', owner, cat, text: String(a.text).trim().slice(0, 300), due: isDate(a.faellig) ? a.faellig : '', prio: !!a.wichtig, on: true });
+    } else if (a.typ === 'termin' && String(a.titel || '').trim() && isDate(a.datum)) {
+      const kind = a.bereich === 'privat' ? 'privat' : 'beruf';
+      out.push({ typ: 'termin', title: String(a.titel).trim().slice(0, 200), date: a.datum, time: isTime(a.von) ? a.von : '', end: isTime(a.bis) ? a.bis : '',
+        kind, playerId: kind === 'beruf' && findPlayer(a.spieler) ? a.spieler : '', ort: String(a.ort || '').trim().slice(0, 200), on: true });
+    } else if (a.typ === 'erledigt') {
+      const x = startItems().find(x => x.t.id === a.id && !x.t.done);
+      if (x) out.push({ typ: 'erledigt', owner: x.owner, id: x.t.id, text: x.t.text, on: true });
+    } else if (a.typ === 'info' && findPlayer(a.spieler)) {
+      const area = AREAS.find(ar => ar.key === a.bereich);
+      const field = area && area.fields.find(f => f[0] === a.feld);
+      if (field && String(a.wert || '').trim()) out.push({ typ: 'info', playerId: a.spieler, area: area.key, field: field[0], label: `${area.label} · ${field[1]}`, value: String(a.wert).trim().slice(0, 500), on: true });
+    }
+  }
+  return { antwort: typeof res?.antwort === 'string' ? res.antwort.slice(0, 600) : '', actions: out };
+}
+function aiActionHTML(a, i) {
+  let icon, main, sub;
+  if (a.typ === 'aufgabe') {
+    const p = findPlayer(a.owner);
+    icon = '☐'; main = (a.prio ? '<b class="imp">!</b> ' : '') + esc(a.text);
+    sub = `Aufgabe · ${a.owner === '__privat' ? '🏠 Privat' : p ? '💼 ' + esc(fullName(p)) : '💼 Beruflich (sonstige)'}${a.due ? ' · fällig ' + fmtDay(a.due) : ''}`;
+  } else if (a.typ === 'termin') {
+    const p = a.playerId && findPlayer(a.playerId);
+    icon = '📅'; main = esc(a.title);
+    sub = `Termin · ${KIND[a.kind].icon} ${fmtDay(a.date)} · ${evTime(a)}${p ? ' · ' + esc(fullName(p)) : ''}${a.ort ? ' · ' + esc(a.ort) : ''}`;
+  } else if (a.typ === 'erledigt') {
+    icon = '✓'; main = 'Erledigt: ' + esc(a.text); sub = 'Aufgabe abhaken';
+  } else {
+    icon = '✎'; main = `${esc(fullName(findPlayer(a.playerId)))}: ${esc(a.value)}`; sub = 'Spielerdaten · ' + esc(a.label);
+  }
+  return `<label class="ai-act ${a.typ === 'termin' ? a.kind : a.owner === '__privat' ? 'privat' : 'beruf'}">
+    <input type="checkbox" data-ai-act="${i}" ${a.on ? 'checked' : ''}>
+    <span class="ai-ico">${icon}</span>
+    <span class="ai-main"><span>${main}</span><small>${sub}</small></span>
+  </label>`;
+}
+function aiPanelHTML() {
+  if (sampleFn === null) return '';
+  const r = ai.result;
+  return `<section class="ai-box" id="ai-box">
+    <form id="aiForm" class="ai-form">
+      <span class="ai-spark" aria-hidden="true">✨</span>
+      <textarea class="input" id="ai-input" rows="1" placeholder="Claude sagen, was zu tun ist …" title="Zum Beispiel: Morgen 10 Uhr Vertragsgespräch mit Katterbach" ${ai.busy ? 'disabled' : ''}>${esc(ai.input)}</textarea>
+      ${ai.busy ? '<button type="button" class="btn" id="aiStop">Stopp</button>' : '<button type="submit" class="btn primary" id="aiSend">Senden</button>'}
+    </form>
+    ${ai.busy ? '<div class="ai-status"><span class="spinner"></span>Claude denkt nach …</div>' : ''}
+    ${ai.error ? `<div class="ai-status err">${esc(ai.error)}</div>` : ''}
+    ${!ai.busy && !r && !ai.error ? `<div class="ai-examples">${['Freitag 15 Uhr Zahnarzt', 'Bis Mittwoch Versicherungsunterlagen von Conté anfordern, dringend', 'Was steht diese Woche an?'].map(x => `<button type="button" class="chip" data-ai-ex="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
+    ${r ? `<div class="ai-result">
+      ${r.antwort ? `<p class="ai-answer">${esc(r.antwort)}</p>` : ''}
+      ${r.actions.length ? `<div class="ai-acts">${r.actions.map(aiActionHTML).join('')}</div>
+        <div class="ai-buttons"><button class="btn ghost" id="aiDiscard">Verwerfen</button><button class="btn primary" id="aiApply">Übernehmen (${r.actions.filter(a => a.on).length})</button></div>`
+        : `<div class="ai-buttons"><button class="btn ghost" id="aiDiscard">Schließen</button></div>`}
+    </div>` : ''}
+  </section>`;
+}
+const AI_ERR = {
+  not_granted: 'Du hast den Zugriff auf Claude für diese Seite abgelehnt. Erlauben kannst du ihn über das Menü der Seite (Berechtigungen).',
+  rate_limited: 'Gerade zu viele Anfragen. Bitte einen Moment warten und dann nochmal senden.',
+  sampling_disabled: 'Claude-Anfragen sind für dein Konto gerade nicht verfügbar.',
+  session_expired: 'Deine Anmeldung ist abgelaufen. Bitte die Seite neu laden.',
+  prompt_too_large: 'Zu viele Daten für eine Anfrage. Bitte den Befehl kürzer fassen.',
+  invalid_json: 'Claude hat unklar geantwortet. Bitte den Befehl etwas genauer formulieren.',
+  refused: 'Claude konnte diesen Befehl nicht ausführen.',
+};
+async function aiRun() {
+  const cmd = ai.input.trim(); if (!cmd || ai.busy || !sampleFn) return;
+  ai.busy = true; ai.error = ''; ai.result = null; ai.ctl = new AbortController();
+  renderStart();
+  try {
+    const res = await sampleFn.json(aiPrompt(cmd), { signal: ai.ctl.signal, cache: false, modelTier: 'quick' });
+    ai.result = aiValidate(res);
+    if (!ai.result.antwort && !ai.result.actions.length) ai.error = 'Daraus konnte ich keine Aufgabe oder keinen Termin erkennen. Bitte etwas genauer formulieren.', ai.result = null;
+  } catch (e) {
+    ai.error = e && e.code === 'cancelled' ? '' : (AI_ERR[e && e.code] || 'Claude ist gerade nicht erreichbar. Bitte später nochmal versuchen.');
+    if (e && e.code === 'not_granted') { /* bleibt sichtbar, Hinweis erklärt es */ }
+  } finally { ai.busy = false; ai.ctl = null; }
+  if ((location.hash || '#start') === '#start') { renderStart(); } 
+}
+function aiApply() {
+  const r = ai.result; if (!r) return;
+  let n = 0;
+  r.actions.filter(a => a.on).forEach(a => {
+    if (a.typ === 'aufgabe') todoArray(a.owner).push({ id: uid(), text: a.text, cat: a.cat, due: a.due, prio: a.prio, done: false, created: Date.now() });
+    else if (a.typ === 'termin') state.termine.push({ id: uid(), title: a.title, date: a.date, time: a.time, end: a.end, kind: a.kind, playerId: a.playerId, ort: a.ort, notiz: '' });
+    else if (a.typ === 'erledigt') { const t = todoArray(a.owner).find(x => x.id === a.id); if (t) { t.done = true; t.doneAt = Date.now(); } }
+    else if (a.typ === 'info') { const p = findPlayer(a.playerId); if (p) p.info[a.area][a.field] = a.value; }
+    n++;
+  });
+  ai.result = null; ai.input = '';
+  save(); renderStart(); toast(n === 1 ? '1 Änderung übernommen' : `${n} Änderungen übernommen`);
+}
+function bindAi() {
+  const form = document.getElementById('aiForm'); if (!form) return;
+  const inp = document.getElementById('ai-input');
+  const grow = () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 160) + 'px'; };
+  grow();
+  inp.oninput = () => { ai.input = inp.value; grow(); };
+  inp.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); aiRun(); } };
+  form.onsubmit = e => { e.preventDefault(); aiRun(); };
+  const stop = document.getElementById('aiStop'); if (stop) stop.onclick = () => ai.ctl && ai.ctl.abort();
+  app.querySelectorAll('[data-ai-ex]').forEach(b => b.onclick = () => { ai.input = b.dataset.aiEx; renderStart(); document.getElementById('ai-input').focus(); });
+  app.querySelectorAll('[data-ai-act]').forEach(c => c.onchange = () => {
+    ai.result.actions[+c.dataset.aiAct].on = c.checked;
+    document.getElementById('aiApply').textContent = `Übernehmen (${ai.result.actions.filter(a => a.on).length})`;
+  });
+  const ap = document.getElementById('aiApply'); if (ap) ap.onclick = aiApply;
+  const di = document.getElementById('aiDiscard'); if (di) di.onclick = () => { ai.result = null; renderStart(); };
 }
 
 /* =========================================================
@@ -1325,6 +1542,10 @@ function updateCounts() {
   const t0 = ymd(today()); document.getElementById('cnt-kal').textContent = state.termine.filter(e => e.date === t0).length;
   document.getElementById('cnt-kal').title = 'Termine heute';
 }
+document.getElementById('aiBtn').onclick = () => {
+  if ((location.hash || '#start') !== '#start') location.hash = '#start';
+  setTimeout(() => { const i = document.getElementById('ai-input'); if (i) { i.focus(); i.scrollIntoView({ block: 'center', behavior: 'smooth' }); } else toast('Der Claude-Assistent ist hier nicht verfügbar'); }, 60);
+};
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { location.hash = b.dataset.go; });
 window.addEventListener('hashchange', render);
 

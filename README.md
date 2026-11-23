@@ -10,6 +10,10 @@ Einfache ToDo-App mit zwei getrennten Bereichen: **Beruflich** und **Privat**.
   - Übersicht zu Versicherungen, Wohnung, Adresse & Kontakt, Steuer, Auto, Familie (Felder + Notizen)
   - eigenen Aufgaben, jeweils einem Bereich zugeordnet, mit Fälligkeitsdatum und „Wichtig“-Markierung
   - Kennzahlen (offen / fällig in 7 Tagen / überfällig) und Liste „Als Nächstes fällig“ über alle Spieler
+- **Favoriten:** Spieler mit ☆ markieren – sie stehen oben, die übrigen lassen sich einklappen.
+- **Reihenfolge:** Über „⇅ Reihenfolge“ Spieler mit Pfeilen oder per Ziehen verschieben.
+- **Sonstige Aufgaben:** berufliche Aufgaben ohne festen Spieler (Termine, Vereine & Verträge, Büro).
+- **Kalender:** Monatsansicht mit beruflichen und privaten Terminen, einzeln oder überlagert, optional mit fälligen Aufgaben. Termine können einem Spieler zugeordnet werden und erscheinen dann auch auf seiner Seite.
 - **Privat:** eigene Aufgabenliste, gruppiert nach Haushalt, Finanzen, Gesundheit, Familie, Termine, Einkaufen, Sonstiges.
 - Aufgabe per Doppelklick bearbeiten, Spieler hinzufügen / umbenennen / entfernen.
 

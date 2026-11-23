@@ -28,6 +28,7 @@
     --warn: #b86a00;
     --warn-soft: #fdf2df;
     --ok: #1f9d55;
+    --star: #d99a00;
     --overlay: rgba(16, 24, 40, .45);
     --shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.07);
     --radius: 12px;
@@ -39,7 +40,7 @@
       --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
       --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
       --privat: #44cf9e; --privat-soft: #143128; --danger: #f87171; --danger-soft: #3a1e1e;
-      --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --overlay: rgba(0,0,0,.6);
+      --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --star: #fcc419; --overlay: rgba(0,0,0,.6);
       --shadow: 0 1px 2px rgba(0,0,0,.4);
       color-scheme: dark;
     }
@@ -48,7 +49,7 @@
     --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
     --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
     --privat: #44cf9e; --privat-soft: #143128; --danger: #f87171; --danger-soft: #3a1e1e;
-    --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --overlay: rgba(0,0,0,.6);
+    --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --star: #fcc419; --overlay: rgba(0,0,0,.6);
     --shadow: 0 1px 2px rgba(0,0,0,.4);
     color-scheme: dark;
   }
@@ -115,6 +116,27 @@
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
   .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; box-shadow: var(--shadow); text-decoration: none; display: flex; flex-direction: column; gap: 12px; transition: transform .12s ease, border-color .12s ease; }
   .tile:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .tile.is-fav { border-color: color-mix(in srgb, var(--star) 55%, var(--border)); }
+  .star { margin-left: auto; align-self: flex-start; border: 0; background: transparent; cursor: pointer; font-size: 20px; line-height: 1; color: var(--muted); padding: 2px 4px; border-radius: 6px; }
+  .star:hover { background: var(--surface-2); color: var(--star); }
+  .star.on { color: var(--star); }
+  .tile.sorting { cursor: grab; transform: none; border-style: dashed; }
+  .tile.dragging { opacity: .45; }
+  .tile.drop-target { border-color: var(--accent); border-style: solid; }
+  .mover { margin-left: auto; display: flex; gap: 4px; align-self: flex-start; }
+  .mover button { border: 1px solid var(--border); background: var(--surface-2); border-radius: 8px; width: 34px; height: 32px; cursor: pointer; font-weight: 700; color: var(--text); }
+  .mover button:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.fav-on { color: var(--star); border-color: var(--star); }
+  .stack { display: grid; gap: 20px; min-width: 0; }
+  .stack .toolbar { margin-bottom: 0; }
+  h2.sec { display: flex; align-items: center; gap: 8px; }
+  h2.sec span, .sec-toggle > span:not(.chev):not(.pill) { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 0 8px; font-family: var(--font-body); }
+  .sec-toggle { display: flex; align-items: center; gap: 8px; width: 100%; border: 1px dashed var(--border); background: transparent; border-radius: var(--radius); padding: 10px 14px; cursor: pointer; font-family: var(--font-head); font-weight: 700; font-size: 16px; margin-bottom: 12px; text-align: left; }
+  .sec-toggle:hover { background: var(--surface); }
+  .sec-toggle .chev { color: var(--muted); width: 12px; }
+  .hint { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--accent-soft); color: var(--text); font-size: 13.5px; }
+  .h-note { font-family: var(--font-body); font-size: 12.5px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+  .avatar.other { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
   @media (prefers-reduced-motion: reduce) { .tile { transition: none; } .tile:hover { transform: none; } }
   .tile-head { display: flex; align-items: center; gap: 12px; }
   .avatar { width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 15px; color: #fff; }
@@ -199,11 +221,62 @@
   .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; width: min(420px, 100%); display: grid; gap: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
   .modal h3 { margin: 0; font-family: var(--font-head); font-size: 18px; }
   .modal p { margin: 0; color: var(--muted); }
-  .modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .modal { max-height: calc(100dvh - 32px); overflow-y: auto; }
+  .dlg-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dlg-fields .field { grid-column: 1 / -1; min-width: 0; }
+  .dlg-fields .field.half { grid-column: auto; }
+
+  /* ---------- Termine ---------- */
+  .tab.active.kal { background: var(--text); color: var(--surface); }
+  .btn.small { padding: 5px 10px; font-size: 13px; }
+  .ev-panel { display: grid; gap: 10px; margin-bottom: 18px; }
+  aside .ev-panel { padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .ev-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ev-head h2 { margin: 0; }
+  .ev-list { display: grid; gap: 6px; }
+  .ev-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); border-radius: 9px; padding: 7px 10px; cursor: pointer; }
+  .ev-row.privat { border-left-color: var(--privat); }
+  .ev-row:hover { background: var(--surface-2); }
+  .ev-date { display: grid; place-items: center; min-width: 38px; line-height: 1.05; font-size: 11px; color: var(--muted); text-transform: uppercase; }
+  .ev-date b { font-family: var(--font-head); font-size: 18px; color: var(--text); }
+  .ev-main { flex: 1; min-width: 0; display: grid; }
+  .ev-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev-main small { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev-more { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; justify-self: start; }
+  .empty.small { padding: 10px 4px; font-size: 13px; }
+
+  .cal-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cal-nav, .cal-toggles { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .cal-month { margin: 0 6px; min-width: 150px; text-align: center; text-transform: capitalize; }
+  .kind-chip.on.beruf { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .kind-chip.on.privat { background: var(--privat); border-color: var(--privat); color: var(--on-accent); }
+  .cal-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+  .cal-panel { padding: 10px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .cal-grid.head span { text-align: center; font-size: 12px; font-weight: 700; color: var(--muted); padding: 4px 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .day { min-height: 96px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 4px; display: flex; flex-direction: column; gap: 3px; text-align: left; cursor: pointer; min-width: 0; overflow: hidden; }
+  .day:hover { border-color: var(--accent); }
+  .day.we { background: var(--surface-2); }
+  .day.out { opacity: .45; }
+  .day .dn { font-size: 12.5px; font-weight: 600; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; font-variant-numeric: tabular-nums; }
+  .day.is-today .dn { background: var(--text); color: var(--surface); }
+  .day.is-sel { border: 2px solid var(--accent); padding: 3px; }
+  .evs { display: grid; gap: 2px; min-width: 0; }
+  .ev { display: block; font-size: 11px; line-height: 1.3; padding: 1px 5px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .ev em { font-style: normal; opacity: .8; font-variant-numeric: tabular-nums; }
+  .ev.privat { background: var(--privat-soft); color: var(--privat); }
+  .ev.todo-ev { background: transparent; border: 1px dashed currentColor; font-weight: 500; }
+  .more { font-size: 11px; color: var(--muted); padding-left: 4px; }
+  h3.mini { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 18px 0 8px; }
+  ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+  ul.plain a { color: var(--accent); font-size: 12.5px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 8px; }
+  .dot.privat { background: var(--privat); }
   .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--text); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; z-index: 60; max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
-    .layout { grid-template-columns: minmax(0, 1fr); }
+    .layout, .cal-layout { grid-template-columns: minmax(0, 1fr); }
     .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 640px) {
@@ -211,8 +284,19 @@
     .info-grid { grid-template-columns: minmax(0, 1fr); }
     .add-form { grid-template-columns: 1fr 1fr; }
     .add-form .input:first-child { grid-column: 1 / -1; }
-    .top-inner { gap: 8px; }
-    .tab { padding: 7px 9px; gap: 5px; }
+    .top-inner { gap: 8px; flex-wrap: wrap; }
+    .tabs { order: 3; width: 100%; }
+    .tabs { gap: 2px; }
+    .tab { flex: 1; min-width: 0; justify-content: center; padding: 7px 4px; gap: 4px; font-size: 13.5px; }
+    #cnt-kal { display: none; }
+    .day { min-height: 54px; }
+    .ev { font-size: 0; padding: 0; height: 6px; border-radius: 3px; background: var(--accent); }
+    .ev.privat { background: var(--privat); }
+    .ev.todo-ev { background: transparent; }
+    .ev.todo-ev { height: 5px; }
+    .more { font-size: 10px; padding: 0; }
+    .cal-month { min-width: 0; font-size: 16px; }
+    .dlg-fields .field.half { grid-column: 1 / -1; }
     .brand { font-size: 16px; }
     .sync > span { display: none; }
   }
@@ -222,8 +306,9 @@
   <div class="wrap top-inner">
     <div class="brand">ToDo <span class="sync" id="sync"><i></i><span>Nur auf diesem Gerät</span></span></div>
     <nav class="tabs">
-      <button class="tab beruf" data-go="#beruflich">💼 Beruflich <span class="count" id="cnt-beruf">0</span></button>
-      <button class="tab privat" data-go="#privat">🏠 Privat <span class="count" id="cnt-privat">0</span></button>
+      <button class="tab beruf" data-route="beruflich" data-go="#beruflich">💼 Beruflich <span class="count" id="cnt-beruf">0</span></button>
+      <button class="tab privat" data-route="privat" data-go="#privat">🏠 Privat <span class="count" id="cnt-privat">0</span></button>
+      <button class="tab kal" data-route="kalender" data-go="#kalender">📅 Kalender <span class="count" id="cnt-kal">0</span></button>
     </nav>
     <button class="menu-btn" id="menuBtn" title="Daten" aria-haspopup="true">⋯</button>
     <div class="menu" id="menu" hidden>
@@ -245,7 +330,7 @@ const STORAGE_KEY = 'todoapp.v1';
 
 const PLAYERS = [
   ['Eric Maxim', 'Choupo-Moting'], ['Noah', 'Katterbach'], ['Umut', 'Tohumcu'], ['Kelven', 'Frees'],
-  ['Franjo', 'Ivanovic'], ['Bambasé', 'Conté'], ['Fisnik', 'Asllani'], ['Noah', 'Wagner'],
+  ['Franjo', 'Ivanovic'], ['Bambasé', 'Conté'], ['Fisnik', 'Asllani'],
   ['Guilherme', 'Ramos'], ['Elias', 'Benkara'], ['David', 'Wurie'], ['Rayan', 'Zidane'],
   ['Salvatore', 'Mule'], ['Yasin', 'Chebil'], ['Raif', 'Adam'], ['Malik', 'Kassassir'], ['Piet', 'Scobel'],
 ];
@@ -269,7 +354,16 @@ const AREAS = [
     ['partner', 'Partner/in'], ['kinder', 'Kinder'], ['eltern', 'Eltern / Angehörige'],
     ['notfall', 'Notfallkontakt'], ['notiz', 'Notizen', 'area'] ] },
 ];
-const PLAYER_CATS = [{ key: 'allgemein', label: 'Allgemein', icon: '📌' }, ...AREAS];
+const PLAYER_CATS = [{ key: 'allgemein', label: 'Allgemein', icon: '📌' }, ...AREAS, { key: 'sonstiges', label: 'Sonstiges', icon: '✨' }];
+
+// Sonstige berufliche Aufgaben (keinem Spieler zugeordnet)
+const BERUF_CATS = [
+  { key: 'allgemein', label: 'Allgemein', icon: '📌' },
+  { key: 'termine', label: 'Termine', icon: '📅' },
+  { key: 'vereine', label: 'Vereine & Verträge', icon: '🤝' },
+  { key: 'buero', label: 'Büro & Verwaltung', icon: '🗂️' },
+  { key: 'sonstiges', label: 'Sonstiges', icon: '✨' },
+];
 
 const PRIVATE_CATS = [
   { key: 'haushalt', label: 'Haushalt', icon: '🧹' },
@@ -288,18 +382,26 @@ function newPlayer(first, last) {
   return { id: slug(first + ' ' + last) || uid(), first, last, info: {}, todos: [] };
 }
 function defaultState() {
-  return { players: PLAYERS.map(([f, l]) => newPlayer(f, l)), privat: { todos: [] } };
+  return { players: PLAYERS.map(([f, l]) => newPlayer(f, l)), privat: { todos: [] }, beruf: { todos: [] }, termine: [] };
 }
+// Spieler, die nicht mehr betreut werden – werden auch aus gespeicherten Daten entfernt
+const RETIRED = ['noah-wagner'];
+
 function normalize(s) {
-  s.players = (s.players || []).filter(p => p && p.id);
+  s.players = (s.players || []).filter(p => p && p.id && !RETIRED.includes(p.id));
   s.players.forEach(p => {
     p.first = p.first || ''; p.last = p.last || '';
     p.info = p.info || {};
     AREAS.forEach(a => { p.info[a.key] = Object.assign(Object.fromEntries(a.fields.map(([k]) => [k, ''])), p.info[a.key] || {}); });
     p.todos = Array.isArray(p.todos) ? p.todos : [];
+    p.fav = !!p.fav;
   });
-  s.privat = s.privat || {};
-  s.privat.todos = Array.isArray(s.privat.todos) ? s.privat.todos : [];
+  ['privat', 'beruf'].forEach(k => {
+    s[k] = s[k] || {};
+    s[k].todos = Array.isArray(s[k].todos) ? s[k].todos : [];
+  });
+  s.termine = (Array.isArray(s.termine) ? s.termine : []).filter(e => e && e.id && e.date);
+  s.termine.forEach(e => { e.kind = e.kind === 'privat' ? 'privat' : 'beruf'; e.title = e.title || ''; });
   return s;
 }
 
@@ -326,7 +428,7 @@ function setSync(kind, text) {
   el.title = text;
 }
 function docsFromState() {
-  const d = { meta: { order: state.players.map(p => p.id) }, privat: { todos: state.privat.todos } };
+  const d = { meta: { order: state.players.map(p => p.id) }, privat: { todos: state.privat.todos }, beruf: { todos: state.beruf.todos }, termine: { items: state.termine } };
   state.players.forEach(p => { d['p_' + p.id] = p; });
   return d;
 }
@@ -334,7 +436,7 @@ function stateFromDocs(docs) {
   const order = (docs.meta && docs.meta.order) || [];
   const extra = Object.keys(docs).filter(k => k.startsWith('p_')).map(k => k.slice(2)).filter(id => !order.includes(id));
   const players = [...order, ...extra].map(id => docs['p_' + id]).filter(Boolean).map(p => structuredClone(p));
-  return normalize({ players, privat: structuredClone(docs.privat || { todos: [] }) });
+  return normalize({ players, privat: structuredClone(docs.privat || { todos: [] }), beruf: structuredClone(docs.beruf || { todos: [] }), termine: structuredClone((docs.termine && docs.termine.items) || []) });
 }
 function scheduleSync() {
   if (!sync.ready) return;
@@ -467,28 +569,42 @@ function areaStatus(p, a) {
 const openCount = list => list.filter(t => !t.done).length;
 const findPlayer = id => state.players.find(p => p.id === id);
 const allPlayerTodos = () => state.players.flatMap(p => p.todos.map(t => ({ ...t, player: p })));
+const allBerufTodos = () => [...allPlayerTodos(), ...state.beruf.todos];
 
 /* ---------- Dialoge (statt prompt/confirm) ---------- */
-function dialog({ title, text = '', fields = [], ok = 'OK', danger = false, cancel = true }) {
+function dialog({ title, text = '', fields = [], ok = 'OK', danger = false, cancel = true, extra = null }) {
   return new Promise(resolve => {
     const back = document.createElement('div');
     back.className = 'modal-back';
+    const control = (f, id) => {
+      const req = f.required ? 'required' : '';
+      if (f.type === 'select') return `<select class="input" id="${id}" name="${f.name}">${f.options.map(([v, l]) => `<option value="${esc(v)}" ${v === (f.value || '') ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+      if (f.type === 'textarea') return `<textarea class="input" id="${id}" name="${f.name}" rows="2">${esc(f.value || '')}</textarea>`;
+      return `<input class="input" type="${f.type || 'text'}" id="${id}" name="${f.name}" value="${esc(f.value || '')}" ${req} autocomplete="off">`;
+    };
     back.innerHTML = `<form class="modal" role="dialog" aria-modal="true">
       <h3>${esc(title)}</h3>${text ? `<p>${esc(text)}</p>` : ''}
-      ${fields.map((f, i) => `<div class="field"><label for="dlg-${i}">${esc(f.label)}</label><input class="input" id="dlg-${i}" name="${f.name}" value="${esc(f.value || '')}" ${f.required ? 'required' : ''} autocomplete="off"></div>`).join('')}
-      <div class="actions">${cancel ? '<button type="button" class="btn ghost" data-cancel>Abbrechen</button>' : ''}<button type="submit" class="btn ${danger ? 'danger-fill' : 'primary'}">${esc(ok)}</button></div>
+      ${fields.length ? `<div class="dlg-fields">${fields.map((f, i) => `<div class="field ${f.half ? 'half' : ''}" data-fname="${f.name}"><label for="dlg-${i}">${esc(f.label)}</label>${control(f, 'dlg-' + i)}</div>`).join('')}</div>` : ''}
+      <div class="actions">${extra ? `<button type="button" class="btn danger" data-extra style="margin-right:auto">${esc(extra.label)}</button>` : ''}${cancel ? '<button type="button" class="btn ghost" data-cancel>Abbrechen</button>' : ''}<button type="submit" class="btn ${danger ? 'danger-fill' : 'primary'}">${esc(ok)}</button></div>
     </form>`;
     const close = v => { back.remove(); document.removeEventListener('keydown', onKey); resolve(v); };
     const onKey = e => { if (e.key === 'Escape') close(null); };
     document.addEventListener('keydown', onKey);
     back.addEventListener('click', e => { if (e.target === back) close(null); });
     const c = back.querySelector('[data-cancel]'); if (c) c.onclick = () => close(null);
-    back.querySelector('form').onsubmit = e => { e.preventDefault(); close(fields.length ? Object.fromEntries(new FormData(e.target)) : true); };
+    const x = back.querySelector('[data-extra]'); if (x) x.onclick = () => close(extra.value);
+    const form = back.querySelector('form');
+    const applyShowIf = () => fields.filter(f => f.showIf).forEach(f => {
+      const [dep, val] = f.showIf; back.querySelector(`[data-fname="${f.name}"]`).hidden = form.elements[dep].value !== val;
+    });
+    form.addEventListener('change', applyShowIf); applyShowIf();
+    form.onsubmit = e => { e.preventDefault(); close(fields.length ? Object.fromEntries(new FormData(form)) : true); };
     document.body.appendChild(back);
-    (back.querySelector('input') || back.querySelector('[type=submit]')).focus();
+    (back.querySelector('input, select, textarea') || back.querySelector('[type=submit]')).focus();
   });
 }
 function toast(msg) {
+  document.querySelectorAll('.toast').forEach(x => x.remove());
   const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
 }
@@ -496,7 +612,7 @@ function toast(msg) {
 /* =========================================================
    Todo-Komponente (gemeinsam für Spieler & Privat)
    ========================================================= */
-const ui = { filter: 'offen', cat: 'alle', search: '' };
+const ui = { filter: 'offen', cat: 'alle', search: '', sortMode: false };
 
 function todoListHTML(list, cats, opts = {}) {
   if (!list.length) return `<div class="empty">${opts.emptyText || 'Keine Aufgaben – alles erledigt.'}</div>`;
@@ -537,7 +653,7 @@ function filterHTML(cats, list) {
   </div>`;
 }
 const applyFilter = list => list.filter(t => (ui.filter === 'alle' || (ui.filter === 'offen' ? !t.done : t.done)) && (ui.cat === 'alle' || t.cat === ui.cat));
-const todoArray = owner => owner === '__privat' ? state.privat.todos : (findPlayer(owner) || { todos: [] }).todos;
+const todoArray = owner => owner === '__privat' ? state.privat.todos : owner === '__beruf' ? state.beruf.todos : (findPlayer(owner) || { todos: [] }).todos;
 
 /* =========================================================
    Seiten
@@ -545,15 +661,67 @@ const todoArray = owner => owner === '__privat' ? state.privat.todos : (findPlay
 const app = document.getElementById('app');
 const openCards = {};
 
+function tileHTML(p) {
+  const o = openCount(p.todos), over = p.todos.filter(isOverdue).length, done = p.todos.length - o;
+  const controls = ui.sortMode
+    ? `<span class="mover"><button data-move="-1" data-id="${esc(p.id)}" title="Nach vorne" aria-label="${esc(fullName(p))} nach vorne">←</button><button data-move="1" data-id="${esc(p.id)}" title="Nach hinten" aria-label="${esc(fullName(p))} nach hinten">→</button></span>`
+    : `<button class="star ${p.fav ? 'on' : ''}" data-fav="${esc(p.id)}" title="${p.fav ? 'Aus Favoriten entfernen' : 'Als Favorit markieren'}" aria-pressed="${p.fav}">${p.fav ? '★' : '☆'}</button>`;
+  return `<div class="tile ${p.fav ? 'is-fav' : ''} ${ui.sortMode ? 'sorting' : ''}" data-id="${esc(p.id)}" data-href="#s-${esc(p.id)}" tabindex="0" role="link" aria-label="${esc(fullName(p))} öffnen" ${ui.sortMode ? 'draggable="true"' : ''}>
+    <div class="tile-head">${avatar(p)}<div class="tile-name">${esc(p.last || p.first)}<small>${esc(p.last ? p.first : '')}</small></div>
+      ${controls}</div>
+    <div class="tile-meta">
+      <span class="pill ${o ? 'open' : ''}">${o} offen</span>
+      ${over ? `<span class="pill over">${over} überfällig</span>` : ''}
+      ${done ? `<span class="pill">✓ ${done}</span>` : ''}
+    </div>
+    <div class="areas">${AREAS.map(a => {
+      const s = areaStatus(p, a); const hasTodo = p.todos.some(t => !t.done && t.cat === a.key);
+      return `<div class="area-dot ${s.cls} ${hasTodo ? 'has-todo' : ''}" title="${a.label}: ${s.filled}/${s.total} Felder${hasTodo ? ' · offene Aufgaben' : ''}"><i></i>${a.short}</div>`;
+    }).join('')}</div>
+  </div>`;
+}
+function toggleFav(id) {
+  const p = findPlayer(id); if (!p) return;
+  p.fav = !p.fav; save(); render();
+  toast(p.fav ? `${fullName(p)} ist jetzt Favorit` : `${fullName(p)} aus Favoriten entfernt`);
+}
+// Spieler innerhalb seiner Gruppe (Favoriten / weitere) verschieben
+function movePlayer(id, dir) {
+  const p = findPlayer(id); if (!p) return;
+  const group = state.players.filter(x => x.fav === p.fav);
+  const j = group.indexOf(p) + dir;
+  if (j < 0 || j >= group.length) return;
+  const a = state.players.indexOf(p), b = state.players.indexOf(group[j]);
+  [state.players[a], state.players[b]] = [state.players[b], state.players[a]];
+  save(); renderBeruflich();
+  const btn = app.querySelector(`[data-id="${CSS.escape(id)}"][data-move="${dir}"]`); if (btn) btn.focus();
+}
+function dropPlayer(dragId, targetId) {
+  const p = findPlayer(dragId), t = findPlayer(targetId);
+  if (!p || !t || p === t || p.fav !== t.fav) return;
+  const from = state.players.indexOf(p);
+  state.players.splice(from, 1);
+  const to = state.players.indexOf(t);
+  state.players.splice(from <= to ? to + 1 : to, 0, p);
+  save(); renderBeruflich();
+}
+function getShowOthers() { try { return localStorage.getItem('todoapp.showOthers') === '1'; } catch (e) { return false; } }
+function setShowOthers(v) { try { localStorage.setItem('todoapp.showOthers', v ? '1' : '0'); } catch (e) {} }
+
 function renderBeruflich() {
-  const open = allPlayerTodos().filter(t => !t.done);
+  const open = allBerufTodos().filter(t => !t.done);
   const q = ui.search.trim().toLowerCase();
-  const players = state.players.filter(p => !q || fullName(p).toLowerCase().includes(q));
+  const match = p => !q || fullName(p).toLowerCase().includes(q);
+  const favs = state.players.filter(p => p.fav && match(p));
+  const others = state.players.filter(p => !p.fav && match(p));
+  const hasFavs = state.players.some(p => p.fav);
+  const showOthers = q || !hasFavs || getShowOthers() || ui.keepOthersOpen;
   const upcoming = sortTodos(open.filter(t => t.due || t.prio)).slice(0, 8);
+  const sonst = state.beruf.todos;
 
   app.innerHTML = `
     <h1>Beruflich</h1>
-    <p class="sub">${state.players.length} Spieler in Betreuung · Kachel antippen für Details</p>
+    <p class="sub">${state.players.length} Spieler in Betreuung${hasFavs ? ` · ${state.players.filter(p => p.fav).length} Favoriten` : ''} · Kachel antippen für Details</p>
     <div class="stats">
       <div class="stat"><div class="v">${state.players.length}</div><div class="l">Spieler</div></div>
       <div class="stat"><div class="v">${open.length}</div><div class="l">Offene Aufgaben</div></div>
@@ -561,35 +729,43 @@ function renderBeruflich() {
       <div class="stat danger"><div class="v">${open.filter(isOverdue).length}</div><div class="l">Überfällig</div></div>
     </div>
     <div class="layout">
-      <section>
+      <section class="stack">
         <div class="toolbar">
           <input class="input grow" id="search" placeholder="Spieler suchen …" value="${esc(ui.search)}" autocomplete="off">
+          <button class="btn ${ui.sortMode ? 'primary' : ''}" id="sortMode">${ui.sortMode ? '✓ Fertig' : '⇅ Reihenfolge'}</button>
           <button class="btn" id="addPlayer">+ Spieler</button>
         </div>
-        <div class="tiles">
-          ${players.map(p => {
-            const o = openCount(p.todos), over = p.todos.filter(isOverdue).length, done = p.todos.length - o;
-            return `<a class="tile" href="#s-${esc(p.id)}">
-              <div class="tile-head">${avatar(p)}<div class="tile-name">${esc(p.last || p.first)}<small>${esc(p.last ? p.first : '')}</small></div></div>
-              <div class="tile-meta">
-                <span class="pill ${o ? 'open' : ''}">${o} offen</span>
-                ${over ? `<span class="pill over">${over} überfällig</span>` : ''}
-                ${done ? `<span class="pill">✓ ${done}</span>` : ''}
-              </div>
-              <div class="areas">${AREAS.map(a => {
-                const s = areaStatus(p, a); const hasTodo = p.todos.some(t => !t.done && t.cat === a.key);
-                return `<div class="area-dot ${s.cls} ${hasTodo ? 'has-todo' : ''}" title="${a.label}: ${s.filled}/${s.total} Felder${hasTodo ? ' · offene Aufgaben' : ''}"><i></i>${a.short}</div>`;
-              }).join('')}</div>
-            </a>`;
-          }).join('') || '<div class="empty">Kein Spieler gefunden.</div>'}
+        ${ui.sortMode ? '<p class="hint">Reihenfolge ändern: mit ← → verschieben oder am Laptop Kacheln ziehen. Favoriten und weitere Spieler werden jeweils für sich sortiert. Zum Abschließen auf „Fertig“ tippen.</p>' : ''}
+        ${hasFavs ? `
+          <div>
+            <h2 class="sec">★ Favoriten <span>${favs.length}</span></h2>
+            <div class="tiles">${favs.map(tileHTML).join('') || '<div class="empty">Kein Favorit passt zur Suche.</div>'}</div>
+          </div>
+          <div>
+            <button class="sec-toggle" id="toggleOthers" aria-expanded="${!!showOthers}">
+              <span class="chev">${showOthers ? '▾' : '▸'}</span> Weitere Spieler <span>${others.length}</span>
+              ${!showOthers && others.some(p => p.todos.some(isOverdue)) ? '<span class="pill over">überfällige Aufgaben</span>' : ''}
+            </button>
+            ${showOthers ? `<div class="tiles">${others.map(tileHTML).join('') || '<div class="empty">Kein weiterer Spieler gefunden.</div>'}</div>` : ''}
+          </div>` : `
+          <p class="hint">Tipp: Mit dem Stern ☆ auf einer Kachel markierst du deine aktiven Spieler als Favoriten. Sie stehen dann oben, die übrigen lassen sich einklappen.</p>
+          <div class="tiles">${others.map(tileHTML).join('') || '<div class="empty">Kein Spieler gefunden.</div>'}</div>`}
+
+        <div class="panel" id="sonstige">
+          <h2>Sonstige Aufgaben <span class="h-note">ohne festen Spieler</span></h2>
+          ${addFormHTML(BERUF_CATS, ui.cat !== 'alle' ? ui.cat : 'allgemein')}
+          ${filterHTML(BERUF_CATS, sonst)}
+          ${todoListHTML(applyFilter(sonst), BERUF_CATS, { emptyText: sonst.length ? 'Keine Aufgaben in dieser Ansicht.' : 'Hier landen berufliche Aufgaben, die zu keinem Spieler gehören, zum Beispiel Vereinstermine oder Büroarbeit.' })}
         </div>
       </section>
       <aside class="panel">
+        ${eventsPanelHTML('Nächste Termine', upcomingEvents({ kind: 'beruf' }), { kind: 'beruf' }, 'Keine beruflichen Termine geplant.')}
         <h2>Als Nächstes fällig</h2>
         ${upcoming.length ? upcoming.map(t => {
           const d = dueInfo(t.due);
-          return `<a class="up-item" href="#s-${esc(t.player.id)}">${avatar(t.player)}
-            <div class="x"><div>${t.prio ? '❗ ' : ''}${esc(t.text)}</div><small>${esc(fullName(t.player))}</small></div>
+          const href = t.player ? `#s-${esc(t.player.id)}` : '#beruflich';
+          return `<a class="up-item" href="${href}" ${t.player ? '' : 'data-jump="sonstige"'}>${t.player ? avatar(t.player) : '<div class="avatar other">✦</div>'}
+            <div class="x"><div>${t.prio ? '❗ ' : ''}${esc(t.text)}</div><small>${t.player ? esc(fullName(t.player)) : 'Sonstige Aufgabe'}</small></div>
             ${d ? `<span class="tag due ${d.cls}">${d.label}</span>` : ''}</a>`;
         }).join('') : '<div class="empty">Keine fälligen oder wichtigen Aufgaben.</div>'}
         <p class="sub" style="margin:14px 0 0;font-size:12.5px">Balken auf den Kacheln: <b style="color:var(--ok)">grün</b> = Bereich vollständig, <b style="color:var(--warn)">gelb</b> = teilweise, grau = leer. <b style="color:var(--accent)">Blaue Schrift</b> = offene Aufgabe im Bereich.</p>
@@ -600,15 +776,33 @@ function renderBeruflich() {
     ui.search = e.target.value; const pos = e.target.selectionStart;
     renderBeruflich(); const n = document.getElementById('search'); n.focus(); n.setSelectionRange(pos, pos);
   });
+  const tog = document.getElementById('toggleOthers');
+  if (tog) tog.onclick = () => { const open = getShowOthers() || ui.keepOthersOpen; ui.keepOthersOpen = false; setShowOthers(!open); renderBeruflich(); };
+  document.getElementById('sortMode').onclick = () => { ui.sortMode = !ui.sortMode; renderBeruflich(); };
+  app.querySelectorAll('.tile').forEach(t => {
+    t.onclick = () => { if (!ui.sortMode) location.hash = t.dataset.href; };
+    t.onkeydown = e => { if (e.key === 'Enter' && e.target === t && !ui.sortMode) location.hash = t.dataset.href; };
+    if (!ui.sortMode) return;
+    t.ondragstart = e => { e.dataTransfer.setData('text/plain', t.dataset.id); e.dataTransfer.effectAllowed = 'move'; t.classList.add('dragging'); };
+    t.ondragend = () => t.classList.remove('dragging');
+    t.ondragover = e => { e.preventDefault(); t.classList.add('drop-target'); };
+    t.ondragleave = () => t.classList.remove('drop-target');
+    t.ondrop = e => { e.preventDefault(); dropPlayer(e.dataTransfer.getData('text/plain'), t.dataset.id); };
+  });
+  app.querySelectorAll('[data-move]').forEach(b => b.onclick = e => { e.stopPropagation(); movePlayer(b.dataset.id, +b.dataset.move); });
+  app.querySelectorAll('[data-fav]').forEach(b => b.onclick = e => { e.stopPropagation(); if (showOthers) ui.keepOthersOpen = true; toggleFav(b.dataset.fav); });
+  app.querySelectorAll('[data-jump]').forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById('sonstige').scrollIntoView({ behavior: 'smooth' }); });
   document.getElementById('addPlayer').onclick = async () => {
     const r = await dialog({ title: 'Spieler hinzufügen', ok: 'Hinzufügen', fields: [
       { name: 'first', label: 'Vorname', required: true }, { name: 'last', label: 'Nachname' } ] });
     if (!r || !r.first.trim()) return;
     const p = newPlayer(r.first.trim(), r.last.trim());
-    if (findPlayer(p.id)) p.id += '-' + uid().slice(0, 4);
+    if (findPlayer(p.id) || RETIRED.includes(p.id)) p.id += '-' + uid().slice(0, 4);
     normalize({ players: [p] });
     state.players.push(p); save(); location.hash = '#s-' + p.id;
   };
+  bindTodoEvents('__beruf');
+  bindEventClicks();
 }
 
 function renderPlayer(id) {
@@ -625,6 +819,7 @@ function renderPlayer(id) {
         <div style="color:var(--muted)">${openCount(p.todos)} offen · ${done} erledigt${over ? ` · <b style="color:var(--danger)">${over} überfällig</b>` : ''}</div>
         <div class="progress"><b style="width:${total ? Math.round(done / total * 100) : 0}%"></b></div>
       </div>
+      <button class="btn ${p.fav ? 'fav-on' : ''}" id="favPlayer" aria-pressed="${p.fav}">${p.fav ? '★ Favorit' : '☆ Als Favorit'}</button>
       <button class="btn ghost" id="renamePlayer">Umbenennen</button>
       <button class="btn ghost danger" id="deletePlayer">Entfernen</button>
     </div>
@@ -651,6 +846,10 @@ function renderPlayer(id) {
       }).join('')}
     </div>
 
+    <div class="panel" style="margin-bottom:24px">
+      ${eventsPanelHTML('Termine', upcomingEvents({ playerId: p.id, limit: 8 }), { kind: 'beruf', playerId: p.id }, 'Keine anstehenden Termine mit ' + esc(p.first) + '.')}
+    </div>
+
     <div class="panel">
       <h2>Aufgaben</h2>
       ${addFormHTML(PLAYER_CATS, ui.cat !== 'alle' ? ui.cat : 'allgemein')}
@@ -674,6 +873,7 @@ function renderPlayer(id) {
     if (!ok) return;
     state.players = state.players.filter(x => x.id !== p.id); save(); location.hash = '#beruflich';
   };
+  document.getElementById('favPlayer').onclick = () => toggleFav(p.id);
   document.getElementById('renamePlayer').onclick = async () => {
     const r = await dialog({ title: 'Spieler umbenennen', ok: 'Speichern', fields: [
       { name: 'first', label: 'Vorname', value: p.first, required: true }, { name: 'last', label: 'Nachname', value: p.last } ] });
@@ -681,6 +881,7 @@ function renderPlayer(id) {
     p.first = r.first.trim(); p.last = r.last.trim(); save(); render();
   };
   bindTodoEvents(p.id);
+  bindEventClicks();
 }
 
 function renderPrivat() {
@@ -701,6 +902,9 @@ function renderPrivat() {
       ${addFormHTML(PRIVATE_CATS, ui.cat !== 'alle' ? ui.cat : 'haushalt')}
       ${filterHTML(PRIVATE_CATS, list)}
     </div>
+    <div class="panel" style="margin-bottom:16px">
+      ${eventsPanelHTML('Nächste Termine', upcomingEvents({ kind: 'privat' }), { kind: 'privat' }, 'Keine privaten Termine geplant.')}
+    </div>
     <div class="groups">
       ${PRIVATE_CATS.map(c => {
         const items = filtered.filter(t => t.cat === c.key);
@@ -711,6 +915,7 @@ function renderPrivat() {
     </div>
   </div>`;
   bindTodoEvents('__privat');
+  bindEventClicks();
 }
 
 /* =========================================================
@@ -749,27 +954,182 @@ function bindTodoEvents(owner) {
 }
 
 /* =========================================================
-   Router (#beruflich, #privat, #s-<spieler>)
+   Termine & Kalender
+   ========================================================= */
+const KIND = { beruf: { label: 'Beruflich', icon: '💼' }, privat: { label: 'Privat', icon: '🏠' } };
+const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const parseYmd = s => new Date(s + 'T00:00:00');
+const evSort = (a, b) => (a.date + (a.time || '00:00')).localeCompare(b.date + (b.time || '00:00'));
+const evTime = e => e.time ? (e.time + (e.end ? '–' + e.end : '')) : 'ganztägig';
+function fmtDay(s, long) {
+  return parseYmd(s).toLocaleDateString('de-DE', long ? { weekday: 'long', day: 'numeric', month: 'long' } : { weekday: 'short', day: '2-digit', month: '2-digit' });
+}
+const cal = {
+  month: (() => { const d = today(); d.setDate(1); return d; })(),
+  sel: ymd(today()),
+  show: (() => { try { return Object.assign({ beruf: true, privat: true, todos: false }, JSON.parse(localStorage.getItem('todoapp.cal') || '{}')); } catch (e) { return { beruf: true, privat: true, todos: false }; } })(),
+};
+const saveCalPrefs = () => { try { localStorage.setItem('todoapp.cal', JSON.stringify(cal.show)); } catch (e) {} };
+
+function upcomingEvents({ kind, playerId, limit = 5 } = {}) {
+  const t = ymd(today());
+  return state.termine.filter(e => e.date >= t && (!kind || e.kind === kind) && (!playerId || e.playerId === playerId)).sort(evSort).slice(0, limit);
+}
+function eventRowHTML(e, opts = {}) {
+  const p = e.playerId && findPlayer(e.playerId);
+  return `<button class="ev-row ${e.kind}" data-ev="${esc(e.id)}">
+    ${opts.hideDate ? '' : `<span class="ev-date"><b>${parseYmd(e.date).getDate()}</b>${parseYmd(e.date).toLocaleDateString('de-DE', { month: 'short' })}</span>`}
+    <span class="ev-main"><span class="ev-title">${esc(e.title)}</span>
+      <small>${opts.hideDate ? '' : fmtDay(e.date) + ' · '}${evTime(e)}${p && !opts.hidePlayer ? ' · ' + esc(fullName(p)) : ''}${e.ort ? ' · ' + esc(e.ort) : ''}</small></span>
+    <span class="ev-kind">${KIND[e.kind].icon}</span>
+  </button>`;
+}
+function eventsPanelHTML(title, list, addArgs, emptyText) {
+  return `<div class="ev-panel">
+    <div class="ev-head"><h2>${title}</h2><button class="btn small" data-add-ev='${esc(JSON.stringify(addArgs))}'>+ Termin</button></div>
+    ${list.length ? `<div class="ev-list">${list.map(e => eventRowHTML(e, { hidePlayer: !!addArgs.playerId })).join('')}</div>` : `<div class="empty small">${emptyText}</div>`}
+    <a class="ev-more" href="#kalender">Zum Kalender →</a>
+  </div>`;
+}
+async function editEvent(ev, preset = {}) {
+  const isNew = !ev;
+  const e = ev || { id: uid(), title: '', date: preset.date || cal.sel || ymd(today()), time: '', end: '', kind: preset.kind || 'beruf', playerId: preset.playerId || '', ort: '', notiz: '' };
+  const r = await dialog({
+    title: isNew ? 'Neuer Termin' : 'Termin bearbeiten', ok: 'Speichern',
+    extra: isNew ? null : { label: 'Löschen', value: '__delete' },
+    fields: [
+      { name: 'title', label: 'Titel', value: e.title, required: true },
+      { name: 'kind', label: 'Bereich', type: 'select', value: e.kind, options: [['beruf', '💼 Beruflich'], ['privat', '🏠 Privat']], half: true },
+      { name: 'date', label: 'Datum', type: 'date', value: e.date, required: true, half: true },
+      { name: 'time', label: 'Von (optional)', type: 'time', value: e.time, half: true },
+      { name: 'end', label: 'Bis (optional)', type: 'time', value: e.end, half: true },
+      { name: 'playerId', label: 'Spieler (optional)', type: 'select', value: e.playerId, showIf: ['kind', 'beruf'],
+        options: [['', '– keiner –'], ...state.players.map(p => [p.id, fullName(p)])] },
+      { name: 'ort', label: 'Ort (optional)', value: e.ort },
+      { name: 'notiz', label: 'Notiz (optional)', type: 'textarea', value: e.notiz },
+    ],
+  });
+  if (!r) return;
+  if (r === '__delete') {
+    state.termine = state.termine.filter(x => x.id !== e.id); save(); render(); toast('Termin gelöscht'); return;
+  }
+  Object.assign(e, { title: r.title.trim(), kind: r.kind, date: r.date, time: r.time || '', end: r.end || '', playerId: r.kind === 'beruf' ? (r.playerId || '') : '', ort: r.ort.trim(), notiz: r.notiz.trim() });
+  if (isNew) state.termine.push(e);
+  save(); render(); toast(isNew ? 'Termin angelegt' : 'Termin gespeichert');
+}
+function bindEventClicks() {
+  app.querySelectorAll('[data-ev]').forEach(b => b.onclick = ev => { ev.stopPropagation(); editEvent(state.termine.find(x => x.id === b.dataset.ev)); });
+  app.querySelectorAll('[data-add-ev]').forEach(b => b.onclick = () => editEvent(null, JSON.parse(b.dataset.addEv)));
+}
+
+function renderKalender() {
+  const y = cal.month.getFullYear(), m = cal.month.getMonth();
+  const first = new Date(y, m, 1), offset = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const weeks = Math.ceil((offset + daysInMonth) / 7);
+  const start = new Date(y, m, 1 - offset);
+  const t = ymd(today());
+
+  const evs = state.termine.filter(e => cal.show[e.kind]);
+  const dueTodos = cal.show.todos ? [
+    ...(cal.show.beruf ? allPlayerTodos().map(x => ({ ...x, kind: 'beruf' })) : []),
+    ...(cal.show.beruf ? state.beruf.todos.map(x => ({ ...x, kind: 'beruf' })) : []),
+    ...(cal.show.privat ? state.privat.todos.map(x => ({ ...x, kind: 'privat' })) : []),
+  ].filter(x => x.due && !x.done) : [];
+  const byDay = {};
+  evs.forEach(e => (byDay[e.date] = byDay[e.date] || { ev: [], td: [] }).ev.push(e));
+  dueTodos.forEach(x => (byDay[x.due] = byDay[x.due] || { ev: [], td: [] }).td.push(x));
+  Object.values(byDay).forEach(d => d.ev.sort(evSort));
+
+  let cells = '';
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const k = ymd(d), items = byDay[k] || { ev: [], td: [] };
+    const all = [...items.ev.map(e => `<span class="ev ${e.kind}" title="${esc(evTime(e) + ' ' + e.title)}">${e.time ? `<em>${e.time}</em> ` : ''}${esc(e.title)}</span>`),
+                 ...items.td.map(x => `<span class="ev todo-ev ${x.kind}" title="Aufgabe: ${esc(x.text)}">☐ ${esc(x.text)}</span>`)];
+    cells += `<button class="day ${d.getMonth() !== m ? 'out' : ''} ${k === t ? 'is-today' : ''} ${k === cal.sel ? 'is-sel' : ''} ${(d.getDay() + 6) % 7 > 4 ? 'we' : ''}" data-day="${k}" aria-label="${fmtDay(k, true)}, ${all.length} Einträge">
+      <span class="dn">${d.getDate()}</span>
+      <span class="evs">${all.slice(0, 3).join('')}${all.length > 3 ? `<span class="more">+${all.length - 3}</span>` : ''}</span>
+    </button>`;
+  }
+  const selItems = byDay[cal.sel] || { ev: [], td: [] };
+  const monthName = first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+
+  app.innerHTML = `
+    <h1>Kalender</h1>
+    <p class="sub">Berufliche und private Termine – einzeln oder übereinander anzeigen.</p>
+    <div class="cal-bar">
+      <div class="cal-nav">
+        <button class="btn" id="calPrev" aria-label="Vorheriger Monat">‹</button>
+        <h2 class="cal-month">${monthName}</h2>
+        <button class="btn" id="calNext" aria-label="Nächster Monat">›</button>
+        <button class="btn ghost" id="calToday">Heute</button>
+      </div>
+      <div class="cal-toggles">
+        <button class="chip kind-chip beruf ${cal.show.beruf ? 'on' : ''}" data-show="beruf" aria-pressed="${cal.show.beruf}">💼 Beruflich</button>
+        <button class="chip kind-chip privat ${cal.show.privat ? 'on' : ''}" data-show="privat" aria-pressed="${cal.show.privat}">🏠 Privat</button>
+        <button class="chip ${cal.show.todos ? 'active' : ''}" data-show="todos" aria-pressed="${cal.show.todos}">☐ Fällige Aufgaben</button>
+        <button class="btn primary" data-add-ev='${esc(JSON.stringify({ date: cal.sel }))}'>+ Termin</button>
+      </div>
+    </div>
+    <div class="cal-layout">
+      <div class="panel cal-panel">
+        <div class="cal-grid head">${WEEKDAYS.map(w => `<span>${w}</span>`).join('')}</div>
+        <div class="cal-grid">${cells}</div>
+      </div>
+      <aside class="panel">
+        <div class="ev-head"><h2>${fmtDay(cal.sel, true)}</h2><button class="btn small" data-add-ev='${esc(JSON.stringify({ date: cal.sel }))}'>+ Termin</button></div>
+        ${selItems.ev.length ? `<div class="ev-list">${selItems.ev.map(e => eventRowHTML(e, { hideDate: true })).join('')}</div>` : '<div class="empty small">Keine Termine an diesem Tag.</div>'}
+        ${selItems.td.length ? `<h3 class="mini">Fällige Aufgaben</h3><ul class="plain">${selItems.td.map(x => `<li><span class="dot ${x.kind}"></span>${esc(x.text)}${x.player ? ` <a href="#s-${esc(x.player.id)}">${esc(fullName(x.player))}</a>` : ''}</li>`).join('')}</ul>` : ''}
+        <h3 class="mini">Nächste Termine</h3>
+        ${(() => { const up = state.termine.filter(e => cal.show[e.kind] && e.date >= t).sort(evSort).slice(0, 6);
+          return up.length ? `<div class="ev-list">${up.map(e => eventRowHTML(e)).join('')}</div>` : '<div class="empty small">Keine anstehenden Termine.</div>'; })()}
+      </aside>
+    </div>`;
+
+  const shift = n => { cal.month = new Date(y, m + n, 1); renderKalender(); };
+  document.getElementById('calPrev').onclick = () => shift(-1);
+  document.getElementById('calNext').onclick = () => shift(1);
+  document.getElementById('calToday').onclick = () => { cal.month = new Date(today().getFullYear(), today().getMonth(), 1); cal.sel = t; renderKalender(); };
+  app.querySelectorAll('[data-show]').forEach(b => b.onclick = () => { cal.show[b.dataset.show] = !cal.show[b.dataset.show]; saveCalPrefs(); renderKalender(); });
+  app.querySelectorAll('[data-day]').forEach(b => {
+    b.onclick = () => {
+      const d = b.dataset.day; cal.sel = d;
+      const dd = parseYmd(d); if (dd.getMonth() !== m) cal.month = new Date(dd.getFullYear(), dd.getMonth(), 1);
+      renderKalender();
+      if (window.innerWidth < 960) app.querySelector('.cal-layout aside').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    b.ondblclick = () => editEvent(null, { date: b.dataset.day });
+  });
+  bindEventClicks();
+}
+
+/* =========================================================
+   Router (#beruflich, #privat, #kalender, #s-<spieler>)
    ========================================================= */
 let lastRoute = null;
 function render() {
   sync.pendingRender = false;
   const h = location.hash || '#beruflich';
-  const route = h.startsWith('#s-') ? 'spieler' : h === '#privat' ? 'privat' : 'beruflich';
+  const route = h.startsWith('#s-') ? 'spieler' : h === '#privat' ? 'privat' : h === '#kalender' ? 'kalender' : 'beruflich';
   const changed = h !== lastRoute;
-  if (changed) { ui.filter = 'offen'; ui.cat = 'alle'; Object.keys(openCards).forEach(k => delete openCards[k]); }
+  if (changed) { ui.filter = 'offen'; ui.cat = 'alle'; ui.sortMode = false; ui.keepOthersOpen = false; Object.keys(openCards).forEach(k => delete openCards[k]); }
   lastRoute = h;
 
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', (route === 'privat') === t.classList.contains('privat')));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.route === (route === 'spieler' ? 'beruflich' : route)));
 
   if (route === 'spieler') renderPlayer(decodeURIComponent(h.slice(3)));
   else if (route === 'privat') renderPrivat();
+  else if (route === 'kalender') renderKalender();
   else renderBeruflich();
   if (changed) window.scrollTo(0, 0);
 }
 function updateCounts() {
-  document.getElementById('cnt-beruf').textContent = openCount(allPlayerTodos());
+  document.getElementById('cnt-beruf').textContent = openCount(allBerufTodos());
   document.getElementById('cnt-privat').textContent = openCount(state.privat.todos);
+  const t0 = ymd(today()); document.getElementById('cnt-kal').textContent = state.termine.filter(e => e.date === t0).length;
+  document.getElementById('cnt-kal').title = 'Termine heute';
 }
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { location.hash = b.dataset.go; });
 window.addEventListener('hashchange', render);

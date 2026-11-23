@@ -267,6 +267,8 @@
   .tag.kind { border-color: transparent; text-decoration: none; }
   .tag.kind.beruf { background: var(--accent-soft); color: var(--accent); }
   .tag.kind.privat { background: var(--privat-soft); color: var(--privat); }
+  .day-h { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .day-h.today { color: var(--text); }
   .legend li { display: flex; align-items: center; font-size: 13px; }
   .sw { width: 14px; height: 10px; border-radius: 3px; margin-right: 8px; background: var(--accent); }
   .sw.privat { background: var(--privat); }
@@ -1222,7 +1224,8 @@ function renderStart() {
   Object.keys(groups).forEach(k => { const s = sortTodos(groups[k].map(x => x.t)); groups[k].sort((a, b) => s.indexOf(a.t) - s.indexOf(b.t)); });
   const t0 = ymd(today());
   const t1 = (() => { const d = today(); d.setDate(d.getDate() + 1); return ymd(d); })();
-  const todayEv = state.termine.filter(e => e.date === t0 || e.date === t1).sort(evSort);
+  const nextEv = state.termine.filter(e => e.date >= t0).sort(evSort).slice(0, 8);
+  const dayLabel = d => d === t0 ? 'Heute' : d === t1 ? 'Morgen' : fmtDay(d, true);
   const doneToday = all.filter(x => x.t.done && x.t.doneAt && x.t.doneAt >= today().getTime()).length;
   const count = (k, kind) => open.filter(x => ampel(x.t) === k && (!kind || x.kind === kind)).length;
   const hour = new Date().getHours();
@@ -1283,8 +1286,8 @@ function renderStart() {
         </section>`).join('')}
       </div>
       <aside class="panel">
-        <div class="ev-head"><h2>Heute & morgen</h2><button class="btn small" data-add-ev='${esc(JSON.stringify({ date: t0 }))}'>+ Termin</button></div>
-        ${todayEv.length ? `<div class="ev-list" style="margin-top:10px">${todayEv.map(e => eventRowHTML(e)).join('')}</div>` : '<div class="empty small">Keine Termine heute und morgen.</div>'}
+        <div class="ev-head"><h2>Nächste Termine</h2><button class="btn small" data-add-ev='${esc(JSON.stringify({ date: t0 }))}'>+ Termin</button></div>
+        ${nextEv.length ? [...new Set(nextEv.map(e => e.date))].map(d => `<h3 class="day-h ${d === t0 ? 'today' : ''}">${dayLabel(d)}</h3><div class="ev-list">${nextEv.filter(e => e.date === d).map(e => eventRowHTML(e, { hideDate: true })).join('')}</div>`).join('') : '<div class="empty small">Keine anstehenden Termine.</div>'}
         <a class="ev-more" href="#kalender" style="display:inline-block;margin-top:10px">Zum Kalender →</a>
         <h3 class="mini">Legende</h3>
         <ul class="plain legend">

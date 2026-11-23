@@ -269,6 +269,43 @@
   .tag.kind.privat { background: var(--privat-soft); color: var(--privat); }
   .day-h { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; }
   .day-h.today { color: var(--text); }
+  .hello { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .datecard { flex: none; width: 76px; border-radius: 14px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); display: grid; text-align: center; box-shadow: var(--shadow); }
+  .dc-m { background: var(--amp-rot); color: #fff; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 3px 0; }
+  .dc-d { font-family: var(--font-head); font-size: 32px; font-weight: 700; line-height: 1.15; padding-top: 2px; }
+  .dc-w { font-size: 11px; color: var(--muted); padding-bottom: 5px; font-weight: 600; }
+  .today-line { margin: 2px 0 2px; font-size: 16px; }
+  .week { margin-bottom: 18px; padding: 14px; }
+  .week-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .week-head h2 { margin: 0; display: flex; align-items: center; gap: 8px; }
+  .kw { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 0 8px; }
+  .week-range { color: var(--muted); font-size: 13.5px; }
+  .week-nav { margin-left: auto; display: flex; gap: 6px; }
+  .week-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+  .wday { border: 1px solid var(--border); border-radius: 10px; min-width: 0; display: flex; flex-direction: column; background: var(--surface); }
+  .wday.we { background: var(--surface-2); }
+  .wday.past { opacity: .55; }
+  .wday.is-today { border: 2px solid var(--text); box-shadow: var(--shadow); }
+  .wday-h { display: flex; align-items: baseline; gap: 6px; border: 0; background: transparent; padding: 8px 8px 4px; cursor: pointer; text-align: left; flex-wrap: wrap; }
+  .wd { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .wn { font-family: var(--font-head); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .is-today .wn { color: var(--amp-rot); }
+  .today-badge { font-size: 10.5px; font-weight: 700; background: var(--text); color: var(--surface); border-radius: 999px; padding: 1px 7px; margin-left: auto; }
+  .wday-body { display: grid; gap: 4px; padding: 0 6px 6px; align-content: start; flex: 1; min-height: 70px; }
+  .wev { display: grid; text-align: left; border: 0; border-left: 3px solid var(--accent); background: var(--accent-soft); color: var(--text); border-radius: 6px; padding: 4px 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; min-width: 0; overflow-wrap: anywhere; }
+  .wev.privat { border-left-color: var(--privat); background: var(--privat-soft); }
+  .wev em { font-style: normal; font-size: 11px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .wev small, .wtd small { display: block; font-weight: 500; color: var(--muted); font-size: 11px; }
+  .wtd { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 4px; align-items: start; font-size: 12.5px; padding: 3px 4px; border-radius: 6px; border: 1px dashed var(--border); cursor: pointer; overflow-wrap: anywhere; }
+  .wtd.beruf { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+  .wtd.privat { border-color: color-mix(in srgb, var(--privat) 40%, var(--border)); }
+  .wtd input { margin: 1px 0 0; width: 14px; height: 14px; }
+  .wtd .amp-light { width: 7px; height: 7px; margin: 5px 0 0; box-shadow: none; }
+  .wempty { color: var(--border); font-size: 13px; padding-left: 2px; }
+  .wadd { justify-self: start; border: 1px dashed var(--border); background: transparent; color: var(--muted); border-radius: 6px; width: 26px; height: 22px; cursor: pointer; opacity: 0; }
+  .wday:hover .wadd, .wadd:focus { opacity: 1; }
+  @media (hover: none) { .wadd { opacity: .7; } }
+  .start-flow { display: flex; flex-direction: column; }
   .legend li { display: flex; align-items: center; font-size: 13px; }
   .sw { width: 14px; height: 10px; border-radius: 3px; margin-right: 8px; background: var(--accent); }
   .sw.privat { background: var(--privat); }
@@ -366,6 +403,17 @@
     .tab { flex: 1; min-width: 0; justify-content: center; padding: 7px 4px; gap: 4px; font-size: 13.5px; }
     #cnt-kal { display: none; }
     .tab .ico { display: none; }
+    .week-grid { grid-template-columns: minmax(0, 1fr); }
+    .wday { flex-direction: row; }
+    .wday-h { flex-direction: column; align-items: center; gap: 0; width: 56px; flex: none; padding: 8px 4px; border-right: 1px solid var(--border); }
+    .today-badge { margin: 3px 0 0; }
+    .wday-body { padding: 6px; min-height: 0; }
+    .wday.past, .wday.empty:not(.is-today) { display: none; }
+    .wadd { display: none; }
+    .start-flow .week { order: 2; margin-top: 18px; }
+    .st-layout > aside { display: none; }
+    .datecard { width: 64px; }
+    .dc-d { font-size: 26px; }
     .ampel-sum { gap: 8px; }
     .amp-card { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; }
     .amp-card .split { margin-left: 0; text-align: left; display: flex; gap: 8px; }
@@ -1215,6 +1263,66 @@ function startItems() {
 }
 const startPrefs = (() => { try { return Object.assign({ kind: 'alle' }, JSON.parse(localStorage.getItem('todoapp.start') || '{}')); } catch (e) { return { kind: 'alle' }; } })();
 
+/* ---------- Wochenkalender auf der Startseite ---------- */
+let weekOffset = 0;
+function isoWeek(d) {
+  const x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = x.getUTCDay() || 7; x.setUTCDate(x.getUTCDate() + 4 - day);
+  const y0 = new Date(Date.UTC(x.getUTCFullYear(), 0, 1));
+  return Math.ceil(((x - y0) / 86400000 + 1) / 7);
+}
+function weekHTML() {
+  const t = today();
+  const monday = new Date(t); monday.setDate(t.getDate() - ((t.getDay() + 6) % 7) + weekOffset * 7);
+  const days = [...Array(7)].map((_, i) => { const d = new Date(monday); d.setDate(monday.getDate() + i); return d; });
+  const t0 = ymd(t);
+  const items = startItems().filter(x => !x.t.done && x.t.due);
+  const sunday = days[6];
+  const range = `${monday.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })} – ${sunday.toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  return `<section class="week panel">
+    <div class="week-head">
+      <h2>${weekOffset === 0 ? 'Diese Woche' : weekOffset === 1 ? 'Nächste Woche' : weekOffset === -1 ? 'Letzte Woche' : 'Woche'} <span class="kw">KW ${isoWeek(monday)}</span></h2>
+      <span class="week-range">${range}</span>
+      <div class="week-nav">
+        <button class="btn small" data-week="-1" aria-label="Vorherige Woche">‹</button>
+        ${weekOffset ? '<button class="btn small" data-week="0">Heute</button>' : ''}
+        <button class="btn small" data-week="1" aria-label="Nächste Woche">›</button>
+      </div>
+    </div>
+    <div class="week-grid">
+      ${days.map(d => {
+        const k = ymd(d);
+        const evs = state.termine.filter(e => e.date === k).sort(evSort);
+        const tds = items.filter(x => x.t.due === k);
+        const past = k < t0;
+        return `<div class="wday ${k === t0 ? 'is-today' : ''} ${past ? 'past' : ''} ${!evs.length && !tds.length ? 'empty' : ''} ${(d.getDay() + 6) % 7 > 4 ? 'we' : ''}">
+          <button class="wday-h" data-goday="${k}" title="Im Kalender öffnen">
+            <span class="wd">${d.toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '')}</span>
+            <span class="wn">${d.getDate()}</span>
+            ${k === t0 ? '<span class="today-badge">Heute</span>' : ''}
+          </button>
+          <div class="wday-body">
+            ${evs.map(e => `<button class="wev ${e.kind}" data-ev="${esc(e.id)}"><em>${e.time || 'ganztags'}</em>${esc(e.title)}${e.ort ? `<small>${esc(e.ort)}</small>` : ''}</button>`).join('')}
+            ${tds.map(x => `<label class="wtd ${x.kind}" title="${x.player ? esc(fullName(x.player)) + ': ' : ''}${esc(x.t.text)}"><input type="checkbox" data-wtd="${esc(x.owner)}|${esc(x.t.id)}" aria-label="Erledigt"><span class="amp-light ${ampel(x.t)}"></span><span>${esc(x.t.text)}${x.player ? `<small>${esc(x.player.last || x.player.first)}</small>` : ''}</span></label>`).join('')}
+            ${!evs.length && !tds.length ? '<span class="wempty">–</span>' : ''}
+            <button class="wadd" data-add-ev='${esc(JSON.stringify({ date: k }))}' aria-label="Termin am ${fmtDay(k)} anlegen">+</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </section>`;
+}
+function bindWeek() {
+  app.querySelectorAll('[data-week]').forEach(b => b.onclick = () => { const v = +b.dataset.week; weekOffset = v === 0 ? 0 : weekOffset + v; renderStart(); });
+  app.querySelectorAll('[data-goday]').forEach(b => b.onclick = () => {
+    const d = parseYmd(b.dataset.goday); cal.sel = b.dataset.goday; cal.month = new Date(d.getFullYear(), d.getMonth(), 1); location.hash = '#kalender';
+  });
+  app.querySelectorAll('[data-wtd]').forEach(c => c.onchange = () => {
+    const [owner, id] = c.dataset.wtd.split('|'); const t = todoArray(owner).find(x => x.id === id);
+    if (t) { t.done = true; t.doneAt = Date.now(); save(); toast('Erledigt ✓'); setTimeout(renderStart, 200); }
+  });
+}
+
 function renderStart() {
   const all = startItems();
   const open = all.filter(x => !x.t.done);
@@ -1248,9 +1356,22 @@ function renderStart() {
   };
 
   app.innerHTML = `
-    <h1>${greet}</h1>
-    <p class="sub">${fmtDay(t0, true)} · ${open.length} offene Aufgaben${doneToday ? ` · heute ${doneToday} erledigt` : ''}</p>
+    <div class="hello">
+      <div class="datecard" aria-label="Heute ist ${fmtDay(t0, true)}">
+        <span class="dc-m">${today().toLocaleDateString('de-DE', { month: 'short' }).replace('.', '')}</span>
+        <span class="dc-d">${today().getDate()}</span>
+        <span class="dc-w">KW ${isoWeek(today())}</span>
+      </div>
+      <div>
+        <h1>${greet}</h1>
+        <p class="today-line">Heute ist <b>${today().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</b></p>
+        <p class="sub" style="margin:0">${open.length} offene Aufgaben${doneToday ? ` · heute ${doneToday} erledigt` : ''}${state.termine.filter(e => e.date === t0).length ? ` · ${state.termine.filter(e => e.date === t0).length} Termin(e) heute` : ''}</p>
+      </div>
+    </div>
     ${aiPanelHTML()}
+    <div class="start-flow">
+    ${weekHTML()}
+    <div class="start-todos">
 
     <div class="ampel-sum">
       ${AMPEL.map(a => `<div class="amp-card ${a.key}">
@@ -1298,6 +1419,8 @@ function renderStart() {
           <li><span class="amp-light gruen"></span>Grün: später oder ohne Datum</li>
         </ul>
       </aside>
+    </div>
+    </div>
     </div>`;
 
   app.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => {
@@ -1325,6 +1448,7 @@ function renderStart() {
   };
   bindEventClicks();
   bindAi();
+  bindWeek();
 }
 
 /* =========================================================

@@ -2,140 +2,128 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ToDo – Beruflich & Privat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Spieler & Privat ToDo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
 <style>
+  /* Layout: sticky Kopfzeile mit Umschalter Beruflich/Privat, darunter Kennzahlen, Kachelraster + Seitenleiste */
   :root {
-    --bg: #f4f5f7;
+    --bg: #f3f5f8;
     --surface: #ffffff;
-    --surface-2: #f8f9fb;
-    --border: #e3e6ea;
-    --text: #1c2027;
-    --muted: #6b7280;
-    --accent: #2563eb;
-    --accent-soft: #e8efff;
-    --privat: #0f9d76;
-    --privat-soft: #e3f6ef;
-    --danger: #dc2626;
-    --danger-soft: #fdecec;
-    --warn: #d97706;
-    --warn-soft: #fdf3e2;
-    --ok: #16a34a;
-    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.08);
+    --surface-2: #f6f8fb;
+    --border: #e0e5ec;
+    --text: #18202b;
+    --muted: #667085;
+    --accent: #2457d6;
+    --accent-soft: #e7eefe;
+    --on-accent: #ffffff;
+    --privat: #0c8a68;
+    --privat-soft: #e1f4ec;
+    --danger: #c92a2a;
+    --danger-soft: #fdeaea;
+    --warn: #b86a00;
+    --warn-soft: #fdf2df;
+    --ok: #1f9d55;
+    --overlay: rgba(16, 24, 40, .45);
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.07);
     --radius: 12px;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #111418;
-      --surface: #1a1e24;
-      --surface-2: #20252c;
-      --border: #2c333c;
-      --text: #e7eaee;
-      --muted: #9aa3ae;
-      --accent: #6b9bff;
-      --accent-soft: #1d2a45;
-      --privat: #3fcf9f;
-      --privat-soft: #15332a;
-      --danger: #f87171;
-      --danger-soft: #3a1f1f;
-      --warn: #fbbf24;
-      --warn-soft: #3a2e15;
-      --ok: #4ade80;
+    :root:not([data-theme="light"]) {
+      --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
+      --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
+      --privat: #44cf9e; --privat-soft: #143128; --danger: #f87171; --danger-soft: #3a1e1e;
+      --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --overlay: rgba(0,0,0,.6);
       --shadow: 0 1px 2px rgba(0,0,0,.4);
+      color-scheme: dark;
     }
   }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  :root[data-theme="dark"] {
+    --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
+    --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
+    --privat: #44cf9e; --privat-soft: #143128; --danger: #f87171; --danger-soft: #3a1e1e;
+    --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --overlay: rgba(0,0,0,.6);
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+    color-scheme: dark;
   }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 var(--font-body); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
   button, input, select, textarea { font: inherit; color: inherit; }
   a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
   /* ---------- Header ---------- */
-  header.top {
-    position: sticky; top: 0; z-index: 10;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-  .top-inner {
-    max-width: 1200px; margin: 0 auto; padding: 12px 16px;
-    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  }
-  .brand { font-weight: 700; font-size: 18px; letter-spacing: -.01em; margin-right: auto; }
-  .brand span { color: var(--muted); font-weight: 500; }
+  header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .top-inner { padding-block: 10px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .brand { font-family: var(--font-head); font-weight: 700; font-size: 18px; margin-right: auto; display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+  .sync { font-family: var(--font-body); font-size: 11.5px; font-weight: 500; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
+  .sync.ok i { background: var(--ok); }
+  .sync.busy i { background: var(--warn); }
+  .sync.err i { background: var(--danger); }
   .tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 10px; border: 1px solid var(--border); }
-  .tab {
-    border: 0; background: transparent; padding: 7px 16px; border-radius: 7px;
-    cursor: pointer; font-weight: 600; color: var(--muted);
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .tab .count { font-size: 12px; background: var(--border); color: var(--text); border-radius: 999px; padding: 0 7px; }
-  .tab.active.beruf { background: var(--accent); color: #fff; }
-  .tab.active.privat { background: var(--privat); color: #fff; }
-  .tab.active .count { background: rgba(255,255,255,.25); color: #fff; }
+  .tab { border: 0; background: transparent; padding: 7px 14px; border-radius: 7px; cursor: pointer; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .tab .count { font-size: 12px; background: var(--border); color: var(--text); border-radius: 999px; padding: 0 7px; font-variant-numeric: tabular-nums; }
+  .tab.active.beruf { background: var(--accent); color: var(--on-accent); }
+  .tab.active.privat { background: var(--privat); color: var(--on-accent); }
+  .tab.active .count { background: rgba(255,255,255,.25); color: inherit; }
   .menu-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 10px; cursor: pointer; color: var(--muted); }
+  .menu { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: 100%; margin-top: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.14); padding: 6px; z-index: 20; width: 260px; max-width: calc(100vw - 32px); }
+  .menu button { display: block; width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+  .menu button:hover { background: var(--surface-2); }
+  .menu .note { font-size: 12px; color: var(--muted); padding: 8px 10px 4px; border-top: 1px solid var(--border); margin-top: 4px; }
 
-  main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 60px; }
-
-  h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.02em; }
-  h2 { font-size: 16px; margin: 0 0 12px; }
+  main.wrap { padding-block: 20px 60px; }
+  h1 { font-family: var(--font-head); font-size: 26px; margin: 0 0 4px; letter-spacing: -.02em; text-wrap: balance; }
+  h2 { font-family: var(--font-head); font-size: 17px; margin: 0 0 12px; }
   .sub { color: var(--muted); margin: 0 0 20px; }
 
   /* ---------- Stats ---------- */
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
-  .stat .v { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .stat .v { font-family: var(--font-head); font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .stat .l { color: var(--muted); font-size: 13px; }
   .stat.danger .v { color: var(--danger); }
   .stat.warn .v { color: var(--warn); }
 
-  /* ---------- Toolbar ---------- */
+  /* ---------- Controls ---------- */
   .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
-  .toolbar .grow { flex: 1; min-width: 180px; }
-  .input, select.input {
-    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 9px;
-    background: var(--surface); outline: none;
-  }
+  .toolbar .grow { flex: 1; min-width: 180px; width: auto; }
+  .input { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); outline: none; min-width: 0; }
   .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .btn {
-    border: 1px solid var(--border); background: var(--surface); padding: 9px 14px;
-    border-radius: 9px; cursor: pointer; font-weight: 600; white-space: nowrap;
-  }
+  .btn { border: 1px solid var(--border); background: var(--surface); padding: 9px 14px; border-radius: 9px; cursor: pointer; font-weight: 600; white-space: nowrap; }
   .btn:hover { background: var(--surface-2); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn.primary:hover { filter: brightness(1.05); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   .privat-page .btn.primary { background: var(--privat); border-color: var(--privat); }
   .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
   .btn.danger { color: var(--danger); }
+  .btn.danger-fill { background: var(--danger); border-color: var(--danger); color: var(--on-accent); }
 
-  /* ---------- Layout ---------- */
-  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; min-width: 0; }
 
   /* ---------- Player tiles ---------- */
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-  .tile {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 14px; cursor: pointer; box-shadow: var(--shadow); text-decoration: none;
-    display: flex; flex-direction: column; gap: 12px;
-    transition: transform .12s ease, border-color .12s ease;
-  }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; box-shadow: var(--shadow); text-decoration: none; display: flex; flex-direction: column; gap: 12px; transition: transform .12s ease, border-color .12s ease; }
   .tile:hover { transform: translateY(-2px); border-color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) { .tile { transition: none; } .tile:hover { transform: none; } }
   .tile-head { display: flex; align-items: center; gap: 12px; }
-  .avatar {
-    width: 42px; height: 42px; border-radius: 50%; flex: none;
-    display: grid; place-items: center; font-weight: 700; font-size: 15px; color: #fff;
-  }
-  .tile-name { font-weight: 700; line-height: 1.2; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 15px; color: #fff; }
+  .tile-name { font-weight: 700; line-height: 1.2; min-width: 0; }
   .tile-name small { display: block; font-weight: 500; color: var(--muted); font-size: 13px; }
   .tile-meta { display: flex; gap: 6px; flex-wrap: wrap; }
-  .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); font-weight: 600; }
+  .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
   .pill.open { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
   .pill.over { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
-  .pill.done { background: transparent; }
   .areas { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
   .area-dot { text-align: center; font-size: 10px; color: var(--muted); }
   .area-dot i { display: block; height: 5px; border-radius: 3px; background: var(--border); margin-bottom: 3px; }
@@ -144,29 +132,25 @@
   .area-dot.has-todo { color: var(--accent); font-weight: 700; }
 
   /* ---------- Todo list ---------- */
-  .add-form { display: grid; grid-template-columns: 1fr 160px 150px auto auto; gap: 8px; margin-bottom: 14px; }
+  .add-form { display: grid; grid-template-columns: minmax(0, 1fr) 170px 150px auto auto; gap: 8px; margin-bottom: 14px; }
   .prio-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 600; user-select: none; background: var(--surface); }
   .prio-toggle input { accent-color: var(--danger); }
   .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
   .chip { border: 1px solid var(--border); background: var(--surface); padding: 4px 11px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
   .chip.active { background: var(--text); color: var(--surface); border-color: var(--text); }
   .todos { list-style: none; margin: 0; padding: 0; }
-  .todo {
-    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start;
-    padding: 10px 4px; border-bottom: 1px solid var(--border);
-  }
+  .todo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 10px 4px; border-bottom: 1px solid var(--border); }
   .todo:last-child { border-bottom: 0; }
   .todo input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
   .privat-page .todo input[type=checkbox] { accent-color: var(--privat); }
-  .todo-text { word-break: break-word; cursor: text; }
+  .todo-text { overflow-wrap: anywhere; cursor: text; }
   .todo.done .todo-text { text-decoration: line-through; color: var(--muted); }
   .todo-sub { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
   .tag { font-size: 11.5px; padding: 1px 7px; border-radius: 5px; font-weight: 600; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
   .tag.due.over { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
   .tag.due.soon { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
   .tag.prio { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
-  .tag.who { background: var(--accent-soft); color: var(--accent); border-color: transparent; text-decoration: none; }
-  .icon-btn { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 2px 6px; border-radius: 6px; font-size: 16px; opacity: .5; }
+  .icon-btn { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 2px 6px; border-radius: 6px; font-size: 16px; opacity: .55; }
   .todo:hover .icon-btn, .icon-btn:focus { opacity: 1; }
   .icon-btn:hover { background: var(--surface-2); color: var(--danger); }
   .empty { color: var(--muted); text-align: center; padding: 24px 8px; font-size: 14px; }
@@ -177,30 +161,29 @@
   .back:hover { color: var(--text); }
   .player-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
   .player-head .avatar { width: 60px; height: 60px; font-size: 21px; }
-  .player-head .grow { flex: 1; }
+  .player-head .grow { flex: 1; min-width: 200px; }
   .progress { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 8px; max-width: 320px; }
   .progress b { display: block; height: 100%; background: var(--ok); }
-  .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; align-items: start; }
-  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; align-items: start; }
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
   .info-card summary { list-style: none; cursor: pointer; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
   .info-card summary::-webkit-details-marker { display: none; }
   .info-card .ic { font-size: 20px; }
-  .info-card .t { font-weight: 700; flex: 1; }
+  .info-card .t { font-weight: 700; flex: 1; min-width: 0; }
   .info-card .t small { display: block; font-weight: 500; font-size: 12px; color: var(--muted); }
   .info-card .chev { color: var(--muted); transition: transform .15s; }
   .info-card[open] .chev { transform: rotate(90deg); }
-  .info-body { padding: 0 14px 14px; display: grid; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .info-body { padding: 12px 14px 14px; display: grid; gap: 8px; border-top: 1px solid var(--border); }
   .field label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
   .field .input { padding: 7px 10px; }
   textarea.input { resize: vertical; min-height: 60px; }
   .status { width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex: none; }
   .status.full { background: var(--ok); }
   .status.part { background: var(--warn); }
-  .info-open-todos { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .info-open-todos { color: var(--accent); font-weight: 600; }
 
   /* ---------- Upcoming ---------- */
   .up-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); text-decoration: none; }
-  .up-item:last-child { border-bottom: 0; }
   .up-item .avatar { width: 30px; height: 30px; font-size: 11px; }
   .up-item .x { flex: 1; min-width: 0; }
   .up-item .x div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -211,45 +194,48 @@
   .group h3 { margin: 0 0 6px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
   .group h3 .n { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 600; }
 
-  .menu { position: absolute; right: 16px; top: 56px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px; display: none; z-index: 20; min-width: 220px; }
-  .menu.show { display: block; }
-  .menu button { display: block; width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
-  .menu button:hover { background: var(--surface-2); }
+  /* ---------- Modal ---------- */
+  .modal-back { position: fixed; inset: 0; background: var(--overlay); display: grid; place-items: center; z-index: 50; padding: 16px; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; width: min(420px, 100%); display: grid; gap: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .modal h3 { margin: 0; font-family: var(--font-head); font-size: 18px; }
+  .modal p { margin: 0; color: var(--muted); }
+  .modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--text); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; z-index: 60; max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
-    .layout { grid-template-columns: 1fr; }
-    .info-grid { grid-template-columns: repeat(2, 1fr); }
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 640px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .info-grid { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: minmax(0, 1fr); }
     .add-form { grid-template-columns: 1fr 1fr; }
     .add-form .input:first-child { grid-column: 1 / -1; }
-    .brand span { display: none; }
-    .top-inner { gap: 8px; flex-wrap: nowrap; }
-    .tab { padding: 7px 9px; white-space: nowrap; gap: 5px; }
+    .top-inner { gap: 8px; }
+    .tab { padding: 7px 9px; gap: 5px; }
     .brand { font-size: 16px; }
+    .sync > span { display: none; }
   }
 </style>
-</head>
-<body>
+
 <header class="top">
-  <div class="top-inner">
-    <div class="brand">ToDo <span>· Übersicht</span></div>
+  <div class="wrap top-inner">
+    <div class="brand">ToDo <span class="sync" id="sync"><i></i><span>Nur auf diesem Gerät</span></span></div>
     <nav class="tabs">
-      <button class="tab beruf" data-go="#/beruflich">💼 Beruflich <span class="count" id="cnt-beruf">0</span></button>
-      <button class="tab privat" data-go="#/privat">🏠 Privat <span class="count" id="cnt-privat">0</span></button>
+      <button class="tab beruf" data-go="#beruflich">💼 Beruflich <span class="count" id="cnt-beruf">0</span></button>
+      <button class="tab privat" data-go="#privat">🏠 Privat <span class="count" id="cnt-privat">0</span></button>
     </nav>
-    <button class="menu-btn" id="menuBtn" title="Daten">⋯</button>
-  </div>
-  <div class="menu" id="menu">
-    <button id="exportBtn">⬇︎ Backup exportieren (JSON)</button>
-    <button id="importBtn">⬆︎ Backup importieren</button>
-    <input type="file" id="importFile" accept="application/json" hidden>
+    <button class="menu-btn" id="menuBtn" title="Daten" aria-haspopup="true">⋯</button>
+    <div class="menu" id="menu" hidden>
+      <button id="exportBtn">Backup speichern (JSON)</button>
+      <button id="importBtn">Backup einspielen</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <div class="note" id="menuNote"></div>
+    </div>
   </div>
 </header>
 
-<main id="app"></main>
+<main class="wrap" id="app"></main>
 
 <script>
 /* =========================================================
@@ -258,51 +244,30 @@
 const STORAGE_KEY = 'todoapp.v1';
 
 const PLAYERS = [
-  ['Eric Maxim', 'Choupo-Moting'],
-  ['Noah', 'Katterbach'],
-  ['Umut', 'Tohumcu'],
-  ['Kelven', 'Frees'],
-  ['Franjo', 'Ivanovic'],
-  ['Bambasé', 'Conté'],
-  ['Fisnik', 'Asllani'],
-  ['Noah', 'Wagner'],
-  ['Guilherme', 'Ramos'],
-  ['Elias', 'Benkara'],
-  ['David', 'Wurie'],
-  ['Rayan', 'Zidane'],
-  ['Salvatore', 'Mule'],
-  ['Yasin', 'Chebil'],
-  ['Raif', 'Adam'],
-  ['Malik', 'Kassassir'],
-  ['Piet', 'Scobel'],
+  ['Eric Maxim', 'Choupo-Moting'], ['Noah', 'Katterbach'], ['Umut', 'Tohumcu'], ['Kelven', 'Frees'],
+  ['Franjo', 'Ivanovic'], ['Bambasé', 'Conté'], ['Fisnik', 'Asllani'], ['Noah', 'Wagner'],
+  ['Guilherme', 'Ramos'], ['Elias', 'Benkara'], ['David', 'Wurie'], ['Rayan', 'Zidane'],
+  ['Salvatore', 'Mule'], ['Yasin', 'Chebil'], ['Raif', 'Adam'], ['Malik', 'Kassassir'], ['Piet', 'Scobel'],
 ];
 
-// Bereiche pro Spieler – jeweils mit Feldern
 const AREAS = [
   { key: 'versicherung', label: 'Versicherungen', short: 'Vers.', icon: '🛡️', fields: [
     ['kranken', 'Krankenversicherung'], ['haftpflicht', 'Haftpflicht'],
-    ['bu', 'Berufsunfähigkeit / Sportinvalidität'], ['hausrat', 'Hausrat'],
-    ['notiz', 'Notizen', 'area'] ] },
+    ['bu', 'Berufsunfähigkeit / Sportinvalidität'], ['hausrat', 'Hausrat'], ['notiz', 'Notizen', 'area'] ] },
   { key: 'wohnung', label: 'Wohnung', short: 'Whg.', icon: '🏢', fields: [
     ['status', 'Status (Miete / Eigentum / Suche)'], ['vermieter', 'Vermieter / Makler'],
-    ['miete', 'Miete / Kosten'], ['vertrag', 'Vertragsbeginn / Kündigungsfrist'],
-    ['notiz', 'Notizen', 'area'] ] },
+    ['miete', 'Miete / Kosten'], ['vertrag', 'Vertragsbeginn / Kündigungsfrist'], ['notiz', 'Notizen', 'area'] ] },
   { key: 'adresse', label: 'Adresse & Kontakt', short: 'Adr.', icon: '📍', fields: [
-    ['strasse', 'Straße & Hausnr.'], ['ort', 'PLZ & Ort'],
-    ['telefon', 'Telefon'], ['email', 'E-Mail'],
-    ['notiz', 'Notizen', 'area'] ] },
+    ['strasse', 'Straße & Hausnr.'], ['ort', 'PLZ & Ort'], ['telefon', 'Telefon'], ['email', 'E-Mail'], ['notiz', 'Notizen', 'area'] ] },
   { key: 'steuer', label: 'Steuer', short: 'Steuer', icon: '🧾', fields: [
-    ['berater', 'Steuerberater'], ['steuerid', 'Steuer-ID'],
-    ['finanzamt', 'Finanzamt'], ['erklaerung', 'Letzte Steuererklärung'],
-    ['notiz', 'Notizen', 'area'] ] },
+    ['berater', 'Steuerberater'], ['steuerid', 'Steuer-ID'], ['finanzamt', 'Finanzamt'],
+    ['erklaerung', 'Letzte Steuererklärung'], ['notiz', 'Notizen', 'area'] ] },
   { key: 'auto', label: 'Auto', short: 'Auto', icon: '🚗', fields: [
-    ['fahrzeug', 'Fahrzeug'], ['kennzeichen', 'Kennzeichen'],
-    ['vertrag', 'Leasing / Kauf (bis)'], ['tuev', 'TÜV / Service fällig'],
-    ['notiz', 'Notizen', 'area'] ] },
+    ['fahrzeug', 'Fahrzeug'], ['kennzeichen', 'Kennzeichen'], ['vertrag', 'Leasing / Kauf (bis)'],
+    ['tuev', 'TÜV / Service fällig'], ['notiz', 'Notizen', 'area'] ] },
   { key: 'familie', label: 'Familie', short: 'Fam.', icon: '👨‍👩‍👧', fields: [
-    ['partner', 'Partner/in'], ['kinder', 'Kinder'],
-    ['eltern', 'Eltern / Angehörige'], ['notfall', 'Notfallkontakt'],
-    ['notiz', 'Notizen', 'area'] ] },
+    ['partner', 'Partner/in'], ['kinder', 'Kinder'], ['eltern', 'Eltern / Angehörige'],
+    ['notfall', 'Notfallkontakt'], ['notiz', 'Notizen', 'area'] ] },
 ];
 const PLAYER_CATS = [{ key: 'allgemein', label: 'Allgemein', icon: '📌' }, ...AREAS];
 
@@ -319,36 +284,148 @@ const PRIVATE_CATS = [
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-function emptyInfo() {
-  const info = {};
-  AREAS.forEach(a => { info[a.key] = {}; a.fields.forEach(([k]) => info[a.key][k] = ''); });
-  return info;
-}
 function newPlayer(first, last) {
-  return { id: slug(first + ' ' + last) || uid(), first, last, info: emptyInfo(), todos: [] };
+  return { id: slug(first + ' ' + last) || uid(), first, last, info: {}, todos: [] };
 }
 function defaultState() {
-  return { version: 1, players: PLAYERS.map(([f, l]) => newPlayer(f, l)), privat: { todos: [] } };
+  return { players: PLAYERS.map(([f, l]) => newPlayer(f, l)), privat: { todos: [] } };
+}
+function normalize(s) {
+  s.players = (s.players || []).filter(p => p && p.id);
+  s.players.forEach(p => {
+    p.first = p.first || ''; p.last = p.last || '';
+    p.info = p.info || {};
+    AREAS.forEach(a => { p.info[a.key] = Object.assign(Object.fromEntries(a.fields.map(([k]) => [k, ''])), p.info[a.key] || {}); });
+    p.todos = Array.isArray(p.todos) ? p.todos : [];
+  });
+  s.privat = s.privat || {};
+  s.privat.todos = Array.isArray(s.privat.todos) ? s.privat.todos : [];
+  return s;
 }
 
 let state;
-function load() {
+function loadLocal() {
+  let s = null;
+  try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) s = JSON.parse(raw); } catch (e) {}
+  state = normalize(s || defaultState());
+}
+function storeLocal() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+function save() { storeLocal(); updateCounts(); scheduleSync(); }
+
+/* =========================================================
+   Synchronisation über das Claude-Konto (db-Capability)
+   Alles liegt im privaten Bereich data/users/<id>/ – nur du siehst ihn:
+   meta (Spieler-Reihenfolge), privat (private Todos), p_<spieler> je Spieler
+   ========================================================= */
+const sync = { coll: null, saved: {}, ready: false, writing: false, again: false, timer: null, pendingRender: false };
+
+function setSync(kind, text) {
+  const el = document.getElementById('sync');
+  el.className = 'sync ' + kind;
+  el.lastElementChild.textContent = text;
+  el.title = text;
+}
+function docsFromState() {
+  const d = { meta: { order: state.players.map(p => p.id) }, privat: { todos: state.privat.todos } };
+  state.players.forEach(p => { d['p_' + p.id] = p; });
+  return d;
+}
+function stateFromDocs(docs) {
+  const order = (docs.meta && docs.meta.order) || [];
+  const extra = Object.keys(docs).filter(k => k.startsWith('p_')).map(k => k.slice(2)).filter(id => !order.includes(id));
+  const players = [...order, ...extra].map(id => docs['p_' + id]).filter(Boolean).map(p => structuredClone(p));
+  return normalize({ players, privat: structuredClone(docs.privat || { todos: [] }) });
+}
+function scheduleSync() {
+  if (!sync.ready) return;
+  setSync('busy', 'Speichert …');
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(flush, 500);
+}
+async function flush() {
+  if (!sync.ready) return;
+  if (sync.writing) { sync.again = true; return; }
+  sync.writing = true;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    state = raw ? JSON.parse(raw) : defaultState();
-  } catch (e) { state = defaultState(); }
-  // fehlende Felder ergänzen
-  state.players.forEach(p => {
-    p.info = p.info || {};
-    AREAS.forEach(a => { p.info[a.key] = Object.assign(Object.fromEntries(a.fields.map(([k]) => [k, ''])), p.info[a.key] || {}); });
-    p.todos = p.todos || [];
+    do {
+      sync.again = false;
+      const local = docsFromState();
+      const keys = new Set([...Object.keys(local), ...Object.keys(sync.saved)]);
+      for (const k of keys) {
+        const j = local[k] ? JSON.stringify(local[k]) : undefined;
+        if (j === sync.saved[k]) continue;
+        const ref = sync.coll.doc(k);
+        if (j === undefined) { await ref.delete(); delete sync.saved[k]; }
+        else { await ref.set(JSON.parse(j)); sync.saved[k] = j; }
+      }
+    } while (sync.again);
+    setSync('ok', 'Synchronisiert');
+  } catch (e) {
+    console.error(e);
+    setSync('err', e && e.code === 'quota_exceeded' ? 'Speicher voll – nicht gespeichert' : 'Nicht gespeichert – neuer Versuch …');
+    setTimeout(scheduleSync, 4000);
+  } finally { sync.writing = false; }
+}
+function applyRemote(snap) {
+  const remote = {};
+  snap.docs.forEach(d => { if (d.exists) remote[d.id] = d.data(); });
+
+  if (!sync.ready) {
+    if (snap.metadata.fromCache) return;            // auf verbindliche Antwort warten
+    sync.ready = true;
+    clearTimeout(sync.loadTimer);
+    if (!Object.keys(remote).length) {               // erster Start: Stand dieses Geräts hochladen
+      sync.saved = {};
+      setSync('busy', 'Speichert …');
+      flush();
+      return;
+    }
+    state = stateFromDocs(remote);
+    sync.saved = {};
+    Object.keys(remote).forEach(k => { sync.saved[k] = JSON.stringify(remote[k]); });
+    storeLocal();
+    setSync('ok', 'Synchronisiert');
+    updateCounts(); safeRender();
+    scheduleSync();                                  // schreibt nur, falls etwas fehlt
+    return;
+  }
+
+  // Änderungen von anderen Geräten einarbeiten – eigene, noch nicht gespeicherte bleiben erhalten
+  const local = docsFromState();
+  const merged = {};
+  let changed = false;
+  for (const k of new Set([...Object.keys(local), ...Object.keys(remote), ...Object.keys(sync.saved)])) {
+    const lj = local[k] ? JSON.stringify(local[k]) : undefined;
+    const rj = remote[k] ? JSON.stringify(remote[k]) : undefined;
+    if (lj !== sync.saved[k]) { if (local[k]) merged[k] = local[k]; continue; }
+    if (rj !== lj) changed = true;
+    if (remote[k]) { merged[k] = remote[k]; sync.saved[k] = rj; } else delete sync.saved[k];
+  }
+  if (!changed) return;
+  state = stateFromDocs(merged);
+  storeLocal(); updateCounts(); safeRender();
+}
+async function startSync() {
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  let db = null, user = null;
+  try { [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]); } catch (e) {}
+  if (!db || !user) { setSync('', 'Nur auf diesem Gerät'); return; }
+  const id = await user.id().catch(() => null);
+  if (!id) { setSync('', 'Nicht angemeldet – nur auf diesem Gerät'); return; }
+  sync.coll = db.collection('data/users/' + id);
+  setSync('busy', 'Verbinde …');
+  sync.loadTimer = setTimeout(() => { if (!sync.ready) setSync('err', 'Keine Verbindung – zeigt Stand dieses Geräts'); }, 10000);
+  sync.coll.onSnapshot(applyRemote, e => {
+    console.error(e);
+    clearTimeout(sync.loadTimer);
+    sync.ready = false;
+    setSync('err', 'Sync unterbrochen – Seite neu öffnen');
   });
-  state.privat = state.privat || { todos: [] };
 }
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
-  updateCounts();
-}
+// Nicht neu zeichnen, während gerade getippt wird
+const typing = () => { const a = document.activeElement; return a && app.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
+function safeRender() { if (typing()) { sync.pendingRender = true; return; } render(); }
+document.addEventListener('focusout', () => setTimeout(() => { if (sync.pendingRender && !typing()) render(); }, 0));
 
 /* =========================================================
    Hilfsfunktionen
@@ -363,25 +440,25 @@ function dueInfo(due) {
   if (diff === 0) label = 'Heute';
   else if (diff === 1) label = 'Morgen';
   else if (diff === -1) label = 'Gestern';
-  else label = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: diff > 300 || diff < -300 ? '2-digit' : undefined });
+  else label = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: Math.abs(diff) > 300 ? '2-digit' : undefined });
   return { diff, label, cls: diff < 0 ? 'over' : diff <= 3 ? 'soon' : '' };
 }
 const isOverdue = t => !t.done && t.due && dueInfo(t.due).diff < 0;
 const isThisWeek = t => !t.done && t.due && (d => d >= 0 && d <= 7)(dueInfo(t.due).diff);
 function sortTodos(list) {
   return [...list].sort((a, b) => {
-    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (!!a.done !== !!b.done) return a.done ? 1 : -1;
     if (!!a.prio !== !!b.prio) return a.prio ? -1 : 1;
     if (a.due && b.due) return a.due.localeCompare(b.due);
     if (a.due) return -1; if (b.due) return 1;
     return (b.created || 0) - (a.created || 0);
   });
 }
-const COLORS = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#0891b2', '#16a34a', '#ca8a04', '#4f46e5', '#0d9488', '#be123c'];
+const COLORS = ['#2457d6', '#7c3aed', '#c0266d', '#d4570b', '#0b7f9a', '#1f8a4c', '#a87400', '#4f46e5', '#0d8577', '#b4233c'];
 function colorFor(id) { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; }
 const initials = p => ((p.first[0] || '') + (p.last[0] || '')).toUpperCase();
 const avatar = p => `<div class="avatar" style="background:${colorFor(p.id)}">${esc(initials(p))}</div>`;
-const fullName = p => `${p.first} ${p.last}`;
+const fullName = p => `${p.first} ${p.last}`.trim();
 function areaStatus(p, a) {
   const keys = a.fields.filter(f => f[2] !== 'area').map(f => f[0]);
   const filled = keys.filter(k => (p.info[a.key][k] || '').trim()).length;
@@ -391,75 +468,92 @@ const openCount = list => list.filter(t => !t.done).length;
 const findPlayer = id => state.players.find(p => p.id === id);
 const allPlayerTodos = () => state.players.flatMap(p => p.todos.map(t => ({ ...t, player: p })));
 
+/* ---------- Dialoge (statt prompt/confirm) ---------- */
+function dialog({ title, text = '', fields = [], ok = 'OK', danger = false, cancel = true }) {
+  return new Promise(resolve => {
+    const back = document.createElement('div');
+    back.className = 'modal-back';
+    back.innerHTML = `<form class="modal" role="dialog" aria-modal="true">
+      <h3>${esc(title)}</h3>${text ? `<p>${esc(text)}</p>` : ''}
+      ${fields.map((f, i) => `<div class="field"><label for="dlg-${i}">${esc(f.label)}</label><input class="input" id="dlg-${i}" name="${f.name}" value="${esc(f.value || '')}" ${f.required ? 'required' : ''} autocomplete="off"></div>`).join('')}
+      <div class="actions">${cancel ? '<button type="button" class="btn ghost" data-cancel>Abbrechen</button>' : ''}<button type="submit" class="btn ${danger ? 'danger-fill' : 'primary'}">${esc(ok)}</button></div>
+    </form>`;
+    const close = v => { back.remove(); document.removeEventListener('keydown', onKey); resolve(v); };
+    const onKey = e => { if (e.key === 'Escape') close(null); };
+    document.addEventListener('keydown', onKey);
+    back.addEventListener('click', e => { if (e.target === back) close(null); });
+    const c = back.querySelector('[data-cancel]'); if (c) c.onclick = () => close(null);
+    back.querySelector('form').onsubmit = e => { e.preventDefault(); close(fields.length ? Object.fromEntries(new FormData(e.target)) : true); };
+    document.body.appendChild(back);
+    (back.querySelector('input') || back.querySelector('[type=submit]')).focus();
+  });
+}
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
+}
+
 /* =========================================================
    Todo-Komponente (gemeinsam für Spieler & Privat)
    ========================================================= */
 const ui = { filter: 'offen', cat: 'alle', search: '' };
 
 function todoListHTML(list, cats, opts = {}) {
-  if (!list.length) return `<div class="empty">${opts.emptyText || 'Keine Aufgaben – alles erledigt 🎉'}</div>`;
+  if (!list.length) return `<div class="empty">${opts.emptyText || 'Keine Aufgaben – alles erledigt.'}</div>`;
   return `<ul class="todos">${sortTodos(list).map(t => {
     const c = cats.find(c => c.key === t.cat);
     const d = dueInfo(t.due);
-    const who = opts.showPlayer && t.player ? `<a class="tag who" href="#/spieler/${t.player.id}">${esc(fullName(t.player))}</a>` : '';
-    return `<li class="todo ${t.done ? 'done' : ''}" data-id="${t.id}" data-owner="${t.player ? t.player.id : opts.owner || ''}">
+    return `<li class="todo ${t.done ? 'done' : ''}" data-id="${esc(t.id)}">
       <input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Erledigt">
       <div>
         <div class="todo-text" title="Doppelklick zum Bearbeiten">${esc(t.text)}</div>
         <div class="todo-sub">
-          ${who}
           ${c && !opts.hideCat ? `<span class="tag">${c.icon} ${esc(c.label)}</span>` : ''}
           ${t.prio ? `<span class="tag prio">! Wichtig</span>` : ''}
           ${d ? `<span class="tag due ${t.done ? '' : d.cls}">📅 ${d.label}</span>` : ''}
         </div>
       </div>
-      <button class="icon-btn" data-del title="Löschen">✕</button>
+      <button class="icon-btn" data-del title="Löschen" aria-label="Löschen">✕</button>
     </li>`;
   }).join('')}</ul>`;
 }
-
 function addFormHTML(cats, defaultCat) {
   return `<form class="add-form" id="addForm">
-    <input class="input" name="text" placeholder="Neue Aufgabe …" autocomplete="off" required>
-    <select class="input" name="cat">${cats.map(c => `<option value="${c.key}" ${c.key === defaultCat ? 'selected' : ''}>${c.icon} ${c.label}</option>`).join('')}</select>
-    <input class="input" type="date" name="due" title="Fällig am">
-    <label class="prio-toggle" title="Wichtig"><input type="checkbox" name="prio"> Wichtig</label>
+    <input class="input" id="new-text" name="text" placeholder="Neue Aufgabe …" autocomplete="off" required>
+    <select class="input" id="new-cat" name="cat">${cats.map(c => `<option value="${c.key}" ${c.key === defaultCat ? 'selected' : ''}>${c.icon} ${c.label}</option>`).join('')}</select>
+    <input class="input" type="date" id="new-due" name="due" title="Fällig am">
+    <label class="prio-toggle" title="Wichtig"><input type="checkbox" id="new-prio" name="prio"> Wichtig</label>
     <button class="btn primary" type="submit">Hinzufügen</button>
   </form>`;
 }
-
 function filterHTML(cats, list) {
   const n = { offen: openCount(list), erledigt: list.length - openCount(list), alle: list.length };
+  const names = { offen: 'Offen', erledigt: 'Erledigt', alle: 'Alle' };
   return `<div class="filters">
-    ${['offen', 'erledigt', 'alle'].map(f => `<button class="chip ${ui.filter === f ? 'active' : ''}" data-filter="${f}">${f[0].toUpperCase() + f.slice(1)} (${n[f]})</button>`).join('')}
+    ${['offen', 'erledigt', 'alle'].map(f => `<button class="chip ${ui.filter === f ? 'active' : ''}" data-filter="${f}">${names[f]} (${n[f]})</button>`).join('')}
     <span style="width:8px"></span>
     <button class="chip ${ui.cat === 'alle' ? 'active' : ''}" data-cat="alle">Alle Bereiche</button>
     ${cats.filter(c => list.some(t => t.cat === c.key)).map(c => `<button class="chip ${ui.cat === c.key ? 'active' : ''}" data-cat="${c.key}">${c.icon} ${c.label}</button>`).join('')}
   </div>`;
 }
-function applyFilter(list) {
-  return list.filter(t => (ui.filter === 'alle' || (ui.filter === 'offen' ? !t.done : t.done)) && (ui.cat === 'alle' || t.cat === ui.cat));
-}
-
-function todoArray(owner) {
-  return owner === '__privat' ? state.privat.todos : (findPlayer(owner) || {}).todos;
-}
+const applyFilter = list => list.filter(t => (ui.filter === 'alle' || (ui.filter === 'offen' ? !t.done : t.done)) && (ui.cat === 'alle' || t.cat === ui.cat));
+const todoArray = owner => owner === '__privat' ? state.privat.todos : (findPlayer(owner) || { todos: [] }).todos;
 
 /* =========================================================
    Seiten
    ========================================================= */
 const app = document.getElementById('app');
+const openCards = {};
 
 function renderBeruflich() {
-  const all = allPlayerTodos();
-  const open = all.filter(t => !t.done);
+  const open = allPlayerTodos().filter(t => !t.done);
   const q = ui.search.trim().toLowerCase();
   const players = state.players.filter(p => !q || fullName(p).toLowerCase().includes(q));
   const upcoming = sortTodos(open.filter(t => t.due || t.prio)).slice(0, 8);
 
   app.innerHTML = `
     <h1>Beruflich</h1>
-    <p class="sub">${state.players.length} Spieler in Betreuung · Klick auf eine Kachel öffnet die Spielerseite</p>
+    <p class="sub">${state.players.length} Spieler in Betreuung · Kachel antippen für Details</p>
     <div class="stats">
       <div class="stat"><div class="v">${state.players.length}</div><div class="l">Spieler</div></div>
       <div class="stat"><div class="v">${open.length}</div><div class="l">Offene Aufgaben</div></div>
@@ -469,18 +563,18 @@ function renderBeruflich() {
     <div class="layout">
       <section>
         <div class="toolbar">
-          <input class="input grow" id="search" placeholder="🔍 Spieler suchen …" value="${esc(ui.search)}">
+          <input class="input grow" id="search" placeholder="Spieler suchen …" value="${esc(ui.search)}" autocomplete="off">
           <button class="btn" id="addPlayer">+ Spieler</button>
         </div>
         <div class="tiles">
           ${players.map(p => {
             const o = openCount(p.todos), over = p.todos.filter(isOverdue).length, done = p.todos.length - o;
-            return `<a class="tile" href="#/spieler/${p.id}">
-              <div class="tile-head">${avatar(p)}<div class="tile-name">${esc(p.last)}<small>${esc(p.first)}</small></div></div>
+            return `<a class="tile" href="#s-${esc(p.id)}">
+              <div class="tile-head">${avatar(p)}<div class="tile-name">${esc(p.last || p.first)}<small>${esc(p.last ? p.first : '')}</small></div></div>
               <div class="tile-meta">
                 <span class="pill ${o ? 'open' : ''}">${o} offen</span>
                 ${over ? `<span class="pill over">${over} überfällig</span>` : ''}
-                ${done ? `<span class="pill done">✓ ${done}</span>` : ''}
+                ${done ? `<span class="pill">✓ ${done}</span>` : ''}
               </div>
               <div class="areas">${AREAS.map(a => {
                 const s = areaStatus(p, a); const hasTodo = p.todos.some(t => !t.done && t.cat === a.key);
@@ -494,43 +588,41 @@ function renderBeruflich() {
         <h2>Als Nächstes fällig</h2>
         ${upcoming.length ? upcoming.map(t => {
           const d = dueInfo(t.due);
-          return `<a class="up-item" href="#/spieler/${t.player.id}">${avatar(t.player)}
+          return `<a class="up-item" href="#s-${esc(t.player.id)}">${avatar(t.player)}
             <div class="x"><div>${t.prio ? '❗ ' : ''}${esc(t.text)}</div><small>${esc(fullName(t.player))}</small></div>
             ${d ? `<span class="tag due ${d.cls}">${d.label}</span>` : ''}</a>`;
         }).join('') : '<div class="empty">Keine fälligen oder wichtigen Aufgaben.</div>'}
-        <p class="sub" style="margin:14px 0 0;font-size:12.5px">Legende Kachel: <b style="color:var(--ok)">grün</b> = Bereich vollständig, <b style="color:var(--warn)">gelb</b> = teilweise, grau = leer, <b style="color:var(--accent)">blaue Schrift</b> = offene Aufgabe im Bereich.</p>
+        <p class="sub" style="margin:14px 0 0;font-size:12.5px">Balken auf den Kacheln: <b style="color:var(--ok)">grün</b> = Bereich vollständig, <b style="color:var(--warn)">gelb</b> = teilweise, grau = leer. <b style="color:var(--accent)">Blaue Schrift</b> = offene Aufgabe im Bereich.</p>
       </aside>
     </div>`;
 
-  const s = document.getElementById('search');
-  s.addEventListener('input', e => {
+  document.getElementById('search').addEventListener('input', e => {
     ui.search = e.target.value; const pos = e.target.selectionStart;
     renderBeruflich(); const n = document.getElementById('search'); n.focus(); n.setSelectionRange(pos, pos);
   });
-  document.getElementById('addPlayer').onclick = () => {
-    const name = prompt('Name des Spielers (Vorname Nachname):');
-    if (!name || !name.trim()) return;
-    const parts = name.trim().split(/\s+/);
-    const last = parts.length > 1 ? parts.pop() : '';
-    const p = newPlayer(parts.join(' '), last);
+  document.getElementById('addPlayer').onclick = async () => {
+    const r = await dialog({ title: 'Spieler hinzufügen', ok: 'Hinzufügen', fields: [
+      { name: 'first', label: 'Vorname', required: true }, { name: 'last', label: 'Nachname' } ] });
+    if (!r || !r.first.trim()) return;
+    const p = newPlayer(r.first.trim(), r.last.trim());
     if (findPlayer(p.id)) p.id += '-' + uid().slice(0, 4);
-    state.players.push(p); save(); location.hash = '#/spieler/' + p.id;
+    normalize({ players: [p] });
+    state.players.push(p); save(); location.hash = '#s-' + p.id;
   };
 }
 
 function renderPlayer(id) {
   const p = findPlayer(id);
-  if (!p) { location.hash = '#/beruflich'; return; }
-  const total = p.todos.length, done = total - openCount(p.todos);
-  const list = applyFilter(p.todos);
+  if (!p) { app.innerHTML = `<a class="back" href="#beruflich">← Alle Spieler</a><div class="panel empty">Dieser Spieler wurde nicht gefunden.</div>`; return; }
+  const total = p.todos.length, done = total - openCount(p.todos), over = p.todos.filter(isOverdue).length;
 
   app.innerHTML = `
-    <a class="back" href="#/beruflich">← Alle Spieler</a>
+    <a class="back" href="#beruflich">← Alle Spieler</a>
     <div class="player-head">
       ${avatar(p)}
       <div class="grow">
         <h1>${esc(fullName(p))}</h1>
-        <div style="color:var(--muted)">${openCount(p.todos)} offen · ${done} erledigt${p.todos.filter(isOverdue).length ? ` · <b style="color:var(--danger)">${p.todos.filter(isOverdue).length} überfällig</b>` : ''}</div>
+        <div style="color:var(--muted)">${openCount(p.todos)} offen · ${done} erledigt${over ? ` · <b style="color:var(--danger)">${over} überfällig</b>` : ''}</div>
         <div class="progress"><b style="width:${total ? Math.round(done / total * 100) : 0}%"></b></div>
       </div>
       <button class="btn ghost" id="renamePlayer">Umbenennen</button>
@@ -544,13 +636,16 @@ function renderPlayer(id) {
         return `<details class="info-card" data-area="${a.key}">
           <summary>
             <span class="ic">${a.icon}</span>
-            <span class="t">${a.label}<small>${s.filled}/${s.total} Felder ausgefüllt${o ? ` · <span class="info-open-todos">${o} offene Aufgabe${o > 1 ? 'n' : ''}</span>` : ''}</small></span>
+            <span class="t">${a.label}<small><span data-filled>${s.filled}/${s.total} Felder ausgefüllt</span>${o ? ` · <span class="info-open-todos">${o} offene Aufgabe${o > 1 ? 'n' : ''}</span>` : ''}</small></span>
             <span class="status ${s.cls}"></span><span class="chev">›</span>
           </summary>
           <div class="info-body">
-            ${a.fields.map(([k, label, type]) => `<div class="field"><label>${label}</label>${type === 'area'
-              ? `<textarea class="input" data-field="${k}">${esc(p.info[a.key][k])}</textarea>`
-              : `<input class="input" data-field="${k}" value="${esc(p.info[a.key][k])}">`}</div>`).join('')}
+            ${a.fields.map(([k, label, type]) => {
+              const fid = `f-${a.key}-${k}`;
+              return `<div class="field"><label for="${fid}">${label}</label>${type === 'area'
+                ? `<textarea class="input" id="${fid}" data-field="${k}">${esc(p.info[a.key][k])}</textarea>`
+                : `<input class="input" id="${fid}" data-field="${k}" value="${esc(p.info[a.key][k])}" autocomplete="off">`}</div>`;
+            }).join('')}
           </div>
         </details>`;
       }).join('')}
@@ -560,33 +655,33 @@ function renderPlayer(id) {
       <h2>Aufgaben</h2>
       ${addFormHTML(PLAYER_CATS, ui.cat !== 'alle' ? ui.cat : 'allgemein')}
       ${filterHTML(PLAYER_CATS, p.todos)}
-      ${todoListHTML(list, PLAYER_CATS, { owner: p.id, emptyText: total ? 'Keine Aufgaben in dieser Ansicht.' : 'Noch keine Aufgaben für ' + esc(p.first) + '.' })}
+      ${todoListHTML(applyFilter(p.todos), PLAYER_CATS, { emptyText: total ? 'Keine Aufgaben in dieser Ansicht.' : 'Noch keine Aufgaben für ' + esc(p.first) + '.' })}
     </div>`;
 
-  // Info-Felder speichern
   app.querySelectorAll('.info-card').forEach(card => {
     const a = AREAS.find(a => a.key === card.dataset.area);
-    card.addEventListener('toggle', () => openCards[a.key] = card.open);
     if (openCards[a.key]) card.open = true;
+    card.addEventListener('toggle', () => { openCards[a.key] = card.open; });
     card.querySelectorAll('[data-field]').forEach(inp => inp.addEventListener('input', () => {
       p.info[a.key][inp.dataset.field] = inp.value; save();
       const s = areaStatus(p, a);
       card.querySelector('.status').className = 'status ' + s.cls;
-      card.querySelector('.t small').firstChild.textContent = `${s.filled}/${s.total} Felder ausgefüllt`;
+      card.querySelector('[data-filled]').textContent = `${s.filled}/${s.total} Felder ausgefüllt`;
     }));
   });
-  document.getElementById('deletePlayer').onclick = () => {
-    if (!confirm(`${fullName(p)} inkl. aller Aufgaben und Daten entfernen?`)) return;
-    state.players = state.players.filter(x => x !== p); save(); location.hash = '#/beruflich';
+  document.getElementById('deletePlayer').onclick = async () => {
+    const ok = await dialog({ title: `${fullName(p)} entfernen?`, text: 'Alle Aufgaben und Daten dieses Spielers werden gelöscht – auf allen Geräten.', ok: 'Entfernen', danger: true });
+    if (!ok) return;
+    state.players = state.players.filter(x => x.id !== p.id); save(); location.hash = '#beruflich';
   };
-  document.getElementById('renamePlayer').onclick = () => {
-    const f = prompt('Vorname:', p.first); if (f === null) return;
-    const l = prompt('Nachname:', p.last); if (l === null) return;
-    p.first = f.trim(); p.last = l.trim(); save(); render();
+  document.getElementById('renamePlayer').onclick = async () => {
+    const r = await dialog({ title: 'Spieler umbenennen', ok: 'Speichern', fields: [
+      { name: 'first', label: 'Vorname', value: p.first, required: true }, { name: 'last', label: 'Nachname', value: p.last } ] });
+    if (!r) return;
+    p.first = r.first.trim(); p.last = r.last.trim(); save(); render();
   };
   bindTodoEvents(p.id);
 }
-const openCards = {};
 
 function renderPrivat() {
   const list = state.privat.todos;
@@ -611,8 +706,8 @@ function renderPrivat() {
         const items = filtered.filter(t => t.cat === c.key);
         if (!items.length) return '';
         return `<div class="panel group"><h3>${c.icon} ${c.label}<span class="n">${openCount(list.filter(t => t.cat === c.key))} offen</span></h3>
-          ${todoListHTML(items, PRIVATE_CATS, { owner: '__privat', hideCat: true })}</div>`;
-      }).join('') || `<div class="panel empty">${list.length ? 'Keine Aufgaben in dieser Ansicht.' : 'Noch keine privaten Aufgaben – oben einfach die erste eintragen.'}</div>`}
+          ${todoListHTML(items, PRIVATE_CATS, { hideCat: true })}</div>`;
+      }).join('') || `<div class="panel empty">${list.length ? 'Keine Aufgaben in dieser Ansicht.' : 'Noch keine privaten Aufgaben. Oben die erste eintragen, zum Beispiel „Zahnarzttermin vereinbaren“.'}</div>`}
     </div>
   </div>`;
   bindTodoEvents('__privat');
@@ -630,22 +725,23 @@ function bindTodoEvents(owner) {
     todoArray(owner).push({ id: uid(), text, cat: fd.get('cat'), due: fd.get('due') || '', prio: !!fd.get('prio'), done: false, created: Date.now() });
     if (ui.filter === 'erledigt') ui.filter = 'offen';
     save(); render();
-    document.querySelector('#addForm [name=text]').focus();
+    document.getElementById('new-text').focus();
   });
 
   app.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { ui.filter = b.dataset.filter; render(); });
   app.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { ui.cat = b.dataset.cat; render(); });
 
   app.querySelectorAll('.todo').forEach(li => {
-    const arr = todoArray(li.dataset.owner || owner);
+    const arr = todoArray(owner);
     const t = arr.find(t => t.id === li.dataset.id);
+    if (!t) return;
     li.querySelector('input[type=checkbox]').onchange = e => { t.done = e.target.checked; t.doneAt = t.done ? Date.now() : null; save(); render(); };
     li.querySelector('[data-del]').onclick = () => { arr.splice(arr.indexOf(t), 1); save(); render(); };
     const txt = li.querySelector('.todo-text');
     txt.ondblclick = () => {
-      txt.innerHTML = `<input class="edit-input" value="${esc(t.text)}">`;
+      txt.innerHTML = `<input class="edit-input" id="edit-${esc(t.id)}" value="${esc(t.text)}">`;
       const inp = txt.querySelector('input'); inp.focus(); inp.select();
-      const commit = () => { const v = inp.value.trim(); if (v) t.text = v; save(); render(); };
+      const commit = () => { const v = inp.value.trim(); if (v && v !== t.text) { t.text = v; save(); } render(); };
       inp.onblur = commit;
       inp.onkeydown = e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.onblur = null; render(); } };
     };
@@ -653,20 +749,20 @@ function bindTodoEvents(owner) {
 }
 
 /* =========================================================
-   Router
+   Router (#beruflich, #privat, #s-<spieler>)
    ========================================================= */
-let lastRoute = '';
+let lastRoute = null;
 function render() {
-  const h = location.hash || '#/beruflich';
-  const route = h.startsWith('#/spieler/') ? 'spieler' : h.startsWith('#/privat') ? 'privat' : 'beruflich';
-  const routeKey = h;
-  if (routeKey !== lastRoute) { ui.filter = 'offen'; ui.cat = 'alle'; if (route !== 'spieler') Object.keys(openCards).forEach(k => delete openCards[k]); }
-  const changed = routeKey !== lastRoute; lastRoute = routeKey;
+  sync.pendingRender = false;
+  const h = location.hash || '#beruflich';
+  const route = h.startsWith('#s-') ? 'spieler' : h === '#privat' ? 'privat' : 'beruflich';
+  const changed = h !== lastRoute;
+  if (changed) { ui.filter = 'offen'; ui.cat = 'alle'; Object.keys(openCards).forEach(k => delete openCards[k]); }
+  lastRoute = h;
 
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active',
-    (route === 'privat' && t.classList.contains('privat')) || (route !== 'privat' && t.classList.contains('beruf'))));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', (route === 'privat') === t.classList.contains('privat')));
 
-  if (route === 'spieler') renderPlayer(decodeURIComponent(h.slice('#/spieler/'.length)));
+  if (route === 'spieler') renderPlayer(decodeURIComponent(h.slice(3)));
   else if (route === 'privat') renderPrivat();
   else renderBeruflich();
   if (changed) window.scrollTo(0, 0);
@@ -675,34 +771,45 @@ function updateCounts() {
   document.getElementById('cnt-beruf').textContent = openCount(allPlayerTodos());
   document.getElementById('cnt-privat').textContent = openCount(state.privat.todos);
 }
-
-document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => location.hash = b.dataset.go);
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { location.hash = b.dataset.go; });
 window.addEventListener('hashchange', render);
 
-/* Backup */
+/* ---------- Menü: Backup ---------- */
 const menu = document.getElementById('menu');
-document.getElementById('menuBtn').onclick = e => { e.stopPropagation(); menu.classList.toggle('show'); };
-document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('show'); });
-document.getElementById('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `todo-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click(); URL.revokeObjectURL(a.href); menu.classList.remove('show');
+document.getElementById('menuBtn').onclick = e => {
+  e.stopPropagation();
+  document.getElementById('menuNote').textContent = sync.ready
+    ? 'Deine Daten liegen privat in deinem Claude-Konto und sind auf Handy und Laptop gleich.'
+    : 'Daten liegen nur in diesem Browser. Mit einem Backup lassen sie sich auf ein anderes Gerät übertragen.';
+  menu.hidden = !menu.hidden;
 };
-document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.hidden = true; });
+document.getElementById('exportBtn').onclick = async () => {
+  menu.hidden = true;
+  const filename = `todo-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const data = JSON.stringify(state, null, 2);
+  const dl = window.claude && window.claude.use ? await window.claude.use('downloads').catch(() => null) : null;
+  if (dl) {
+    try { await dl.save({ filename, data }); } catch (e) { if (e && e.code !== 'dismissed') toast('Backup konnte nicht gespeichert werden'); }
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+  a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+document.getElementById('importBtn').onclick = () => { menu.hidden = true; document.getElementById('importFile').click(); };
 document.getElementById('importFile').onchange = async e => {
-  const f = e.target.files[0]; if (!f) return;
-  try {
-    const data = JSON.parse(await f.text());
-    if (!Array.isArray(data.players)) throw new Error();
-    if (!confirm('Aktuelle Daten durch das Backup ersetzen?')) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); load(); save(); render();
-  } catch { alert('Die Datei ist kein gültiges Backup.'); }
-  e.target.value = ''; menu.classList.remove('show');
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  let data;
+  try { data = JSON.parse(await f.text()); if (!Array.isArray(data.players)) throw new Error(); }
+  catch { await dialog({ title: 'Datei nicht lesbar', text: 'Das ist kein gültiges Backup dieser App.', ok: 'OK', cancel: false }); return; }
+  const ok = await dialog({ title: 'Backup einspielen?', text: `Die aktuellen Daten werden durch das Backup ersetzt (${data.players.length} Spieler).`, ok: 'Ersetzen', danger: true });
+  if (!ok) return;
+  state = normalize(data); save(); render(); toast('Backup eingespielt');
 };
 
-load(); updateCounts(); render();
+loadLocal(); updateCounts(); render(); startSync();
 </script>
 </body>
 </html>

@@ -21,8 +21,11 @@
     --accent: #2457d6;
     --accent-soft: #e7eefe;
     --on-accent: #ffffff;
-    --privat: #0c8a68;
-    --privat-soft: #e1f4ec;
+    --privat: #7c3aed;
+    --privat-soft: #f1eafe;
+    --amp-rot: #e03131;
+    --amp-gelb: #f0a500;
+    --amp-gruen: #2f9e44;
     --danger: #c92a2a;
     --danger-soft: #fdeaea;
     --warn: #b86a00;
@@ -39,7 +42,7 @@
     :root:not([data-theme="light"]) {
       --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
       --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
-      --privat: #44cf9e; --privat-soft: #143128; --danger: #f87171; --danger-soft: #3a1e1e;
+      --privat: #b197fc; --privat-soft: #2a2140; --amp-rot: #ff6b6b; --amp-gelb: #ffc531; --amp-gruen: #51cf66; --danger: #f87171; --danger-soft: #3a1e1e;
       --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --star: #fcc419; --overlay: rgba(0,0,0,.6);
       --shadow: 0 1px 2px rgba(0,0,0,.4);
       color-scheme: dark;
@@ -48,7 +51,7 @@
   :root[data-theme="dark"] {
     --bg: #10141a; --surface: #181d25; --surface-2: #1f252e; --border: #2b333e;
     --text: #e6eaf0; --muted: #98a2b3; --accent: #7aa2ff; --accent-soft: #1c2945; --on-accent: #0d1424;
-    --privat: #44cf9e; --privat-soft: #143128; --danger: #f87171; --danger-soft: #3a1e1e;
+    --privat: #b197fc; --privat-soft: #2a2140; --amp-rot: #ff6b6b; --amp-gelb: #ffc531; --amp-gruen: #51cf66; --danger: #f87171; --danger-soft: #3a1e1e;
     --warn: #fbbf24; --warn-soft: #3a2d14; --ok: #4ade80; --star: #fcc419; --overlay: rgba(0,0,0,.6);
     --shadow: 0 1px 2px rgba(0,0,0,.4);
     color-scheme: dark;
@@ -227,6 +230,47 @@
   .dlg-fields .field { grid-column: 1 / -1; min-width: 0; }
   .dlg-fields .field.half { grid-column: auto; }
 
+  /* ---------- Startseite / Ampel ---------- */
+  .tab.active.start { background: var(--text); color: var(--surface); }
+  .amp-light { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex: none; vertical-align: 1px; margin-right: 7px; }
+  .amp-light.rot { background: var(--amp-rot); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amp-rot) 22%, transparent); }
+  .amp-light.gelb { background: var(--amp-gelb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amp-gelb) 22%, transparent); }
+  .amp-light.gruen { background: var(--amp-gruen); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amp-gruen) 22%, transparent); }
+  .ampel-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .amp-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-top: 4px solid var(--border); min-width: 0; }
+  .amp-card.rot { border-top-color: var(--amp-rot); }
+  .amp-card.gelb { border-top-color: var(--amp-gelb); }
+  .amp-card.gruen { border-top-color: var(--amp-gruen); }
+  .amp-card .amp-light { width: 14px; height: 14px; margin: 0; }
+  .amp-card .v { font-family: var(--font-head); font-size: 28px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .amp-card .l { color: var(--muted); font-size: 13px; }
+  .amp-card .split { margin-left: auto; display: grid; gap: 2px; font-size: 12.5px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  .split .beruf { color: var(--accent); } .split .privat { color: var(--privat); }
+  .st-tools { display: grid; gap: 12px; margin-bottom: 16px; }
+  .quick-add { display: grid; grid-template-columns: minmax(0, 1fr) 210px 150px auto auto; gap: 8px; }
+  .st-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+  .ampel-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+  .amp-col { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; min-width: 0; }
+  .amp-col h2 { display: flex; align-items: center; margin: 0; font-size: 16px; }
+  .amp-col h2 .n { margin-left: auto; font-size: 12px; color: var(--muted); font-family: var(--font-body); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 0 8px; }
+  .amp-col.rot { background: color-mix(in srgb, var(--amp-rot) 5%, var(--surface)); border-color: color-mix(in srgb, var(--amp-rot) 30%, var(--border)); }
+  .amp-hint { margin: 2px 0 10px; font-size: 12px; color: var(--muted); }
+  .st-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .st-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 9px; align-items: start; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); transition: opacity .2s, transform .2s; }
+  .st-item.privat { border-left-color: var(--privat); }
+  .st-item.leaving { opacity: 0; transform: translateX(8px); }
+  .st-item input { width: 18px; height: 18px; margin-top: 1px; accent-color: var(--accent); cursor: pointer; }
+  .st-item.privat input { accent-color: var(--privat); }
+  .st-text { overflow-wrap: anywhere; font-weight: 500; }
+  .imp { color: var(--amp-rot); }
+  .tag.kind { border-color: transparent; text-decoration: none; }
+  .tag.kind.beruf { background: var(--accent-soft); color: var(--accent); }
+  .tag.kind.privat { background: var(--privat-soft); color: var(--privat); }
+  .legend li { display: flex; align-items: center; font-size: 13px; }
+  .sw { width: 14px; height: 10px; border-radius: 3px; margin-right: 8px; background: var(--accent); }
+  .sw.privat { background: var(--privat); }
+  .todo-text .amp-light { width: 8px; height: 8px; box-shadow: none; }
+
   /* ---------- Termine ---------- */
   .tab.active.kal { background: var(--text); color: var(--surface); }
   .btn.small { padding: 5px 10px; font-size: 13px; }
@@ -275,8 +319,13 @@
   .dot.privat { background: var(--privat); }
   .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--text); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; z-index: 60; max-width: calc(100% - 32px); }
 
+  @media (max-width: 1100px) {
+    .ampel-cols { grid-template-columns: minmax(0, 1fr); }
+  }
   @media (max-width: 960px) {
-    .layout, .cal-layout { grid-template-columns: minmax(0, 1fr); }
+    .layout, .cal-layout, .st-layout { grid-template-columns: minmax(0, 1fr); }
+    .quick-add { grid-template-columns: 1fr 1fr; }
+    .quick-add .input:first-child { grid-column: 1 / -1; }
     .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 640px) {
@@ -289,6 +338,10 @@
     .tabs { gap: 2px; }
     .tab { flex: 1; min-width: 0; justify-content: center; padding: 7px 4px; gap: 4px; font-size: 13.5px; }
     #cnt-kal { display: none; }
+    .tab .ico { display: none; }
+    .ampel-sum { gap: 8px; }
+    .amp-card { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; }
+    .amp-card .split { margin-left: 0; text-align: left; display: flex; gap: 8px; }
     .day { min-height: 54px; }
     .ev { font-size: 0; padding: 0; height: 6px; border-radius: 3px; background: var(--accent); }
     .ev.privat { background: var(--privat); }
@@ -306,9 +359,10 @@
   <div class="wrap top-inner">
     <div class="brand">ToDo <span class="sync" id="sync"><i></i><span>Nur auf diesem Gerät</span></span></div>
     <nav class="tabs">
-      <button class="tab beruf" data-route="beruflich" data-go="#beruflich">💼 Beruflich <span class="count" id="cnt-beruf">0</span></button>
-      <button class="tab privat" data-route="privat" data-go="#privat">🏠 Privat <span class="count" id="cnt-privat">0</span></button>
-      <button class="tab kal" data-route="kalender" data-go="#kalender">📅 Kalender <span class="count" id="cnt-kal">0</span></button>
+      <button class="tab start" data-route="start" data-go="#start"><span class="ico">✓</span> Start <span class="count" id="cnt-start">0</span></button>
+      <button class="tab beruf" data-route="beruflich" data-go="#beruflich"><span class="ico">💼</span> Beruflich <span class="count" id="cnt-beruf">0</span></button>
+      <button class="tab privat" data-route="privat" data-go="#privat"><span class="ico">🏠</span> Privat <span class="count" id="cnt-privat">0</span></button>
+      <button class="tab kal" data-route="kalender" data-go="#kalender"><span class="ico">📅</span> Kalender <span class="count" id="cnt-kal">0</span></button>
     </nav>
     <button class="menu-btn" id="menuBtn" title="Daten" aria-haspopup="true">⋯</button>
     <div class="menu" id="menu" hidden>
@@ -622,7 +676,7 @@ function todoListHTML(list, cats, opts = {}) {
     return `<li class="todo ${t.done ? 'done' : ''}" data-id="${esc(t.id)}">
       <input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Erledigt">
       <div>
-        <div class="todo-text" title="Doppelklick zum Bearbeiten">${esc(t.text)}</div>
+        <div class="todo-text">${t.done ? '' : `<span class="amp-light ${ampel(t)}" title="${ampelLabel(ampel(t))}"></span>`}<span title="Doppelklick zum Bearbeiten">${esc(t.text)}</span></div>
         <div class="todo-sub">
           ${c && !opts.hideCat ? `<span class="tag">${c.icon} ${esc(c.label)}</span>` : ''}
           ${t.prio ? `<span class="tag prio">! Wichtig</span>` : ''}
@@ -1106,13 +1160,150 @@ function renderKalender() {
 }
 
 /* =========================================================
-   Router (#beruflich, #privat, #kalender, #s-<spieler>)
+   Startseite: alle offenen Aufgaben, Ampel-System
+   Rot  = überfällig, heute fällig oder als „Wichtig“ markiert
+   Gelb = fällig in den nächsten 7 Tagen
+   Grün = später fällig oder ohne Datum
+   ========================================================= */
+const AMPEL = [
+  { key: 'rot', label: 'Dringend', hint: 'überfällig, heute fällig oder wichtig' },
+  { key: 'gelb', label: 'Bald', hint: 'fällig in den nächsten 7 Tagen' },
+  { key: 'gruen', label: 'Mit Zeit', hint: 'später fällig oder ohne Datum' },
+];
+function ampel(t) {
+  if (t.done) return '';
+  const d = dueInfo(t.due);
+  if (t.prio || (d && d.diff <= 0)) return 'rot';
+  if (d && d.diff <= 7) return 'gelb';
+  return 'gruen';
+}
+const ampelLabel = k => (AMPEL.find(a => a.key === k) || {}).label || '';
+function startItems() {
+  return [
+    ...state.players.flatMap(p => p.todos.map(t => ({ t, kind: 'beruf', owner: p.id, player: p, cat: PLAYER_CATS.find(c => c.key === t.cat) }))),
+    ...state.beruf.todos.map(t => ({ t, kind: 'beruf', owner: '__beruf', cat: BERUF_CATS.find(c => c.key === t.cat) })),
+    ...state.privat.todos.map(t => ({ t, kind: 'privat', owner: '__privat', cat: PRIVATE_CATS.find(c => c.key === t.cat) })),
+  ];
+}
+const startPrefs = (() => { try { return Object.assign({ kind: 'alle' }, JSON.parse(localStorage.getItem('todoapp.start') || '{}')); } catch (e) { return { kind: 'alle' }; } })();
+
+function renderStart() {
+  const all = startItems();
+  const open = all.filter(x => !x.t.done);
+  const shown = open.filter(x => startPrefs.kind === 'alle' || x.kind === startPrefs.kind);
+  const groups = { rot: [], gelb: [], gruen: [] };
+  shown.forEach(x => groups[ampel(x.t)].push(x));
+  Object.keys(groups).forEach(k => { const s = sortTodos(groups[k].map(x => x.t)); groups[k].sort((a, b) => s.indexOf(a.t) - s.indexOf(b.t)); });
+  const t0 = ymd(today());
+  const t1 = (() => { const d = today(); d.setDate(d.getDate() + 1); return ymd(d); })();
+  const todayEv = state.termine.filter(e => e.date === t0 || e.date === t1).sort(evSort);
+  const doneToday = all.filter(x => x.t.done && x.t.doneAt && x.t.doneAt >= today().getTime()).length;
+  const count = (k, kind) => open.filter(x => ampel(x.t) === k && (!kind || x.kind === kind)).length;
+  const hour = new Date().getHours();
+  const greet = hour < 11 ? 'Guten Morgen' : hour < 18 ? 'Hallo' : 'Guten Abend';
+
+  const itemHTML = x => {
+    const d = dueInfo(x.t.due);
+    const where = x.kind === 'privat'
+      ? `<span class="tag kind privat">🏠 Privat${x.cat ? ' · ' + esc(x.cat.label) : ''}</span>`
+      : x.player
+        ? `<a class="tag kind beruf" href="#s-${esc(x.player.id)}">💼 ${esc(fullName(x.player))}${x.cat ? ' · ' + esc(x.cat.label) : ''}</a>`
+        : `<span class="tag kind beruf">💼 Sonstiges${x.cat ? ' · ' + esc(x.cat.label) : ''}</span>`;
+    return `<li class="st-item ${x.kind}" data-owner="${esc(x.owner)}" data-id="${esc(x.t.id)}">
+      <input type="checkbox" aria-label="Erledigt">
+      <div class="st-body">
+        <div class="st-text">${x.t.prio ? '<b class="imp">!</b> ' : ''}${esc(x.t.text)}</div>
+        <div class="todo-sub">${where}${d ? `<span class="tag due ${d.cls}">📅 ${d.label}</span>` : ''}</div>
+      </div>
+    </li>`;
+  };
+
+  app.innerHTML = `
+    <h1>${greet}</h1>
+    <p class="sub">${fmtDay(t0, true)} · ${open.length} offene Aufgaben${doneToday ? ` · heute ${doneToday} erledigt` : ''}</p>
+
+    <div class="ampel-sum">
+      ${AMPEL.map(a => `<div class="amp-card ${a.key}">
+        <span class="amp-light ${a.key}"></span>
+        <div><div class="v">${count(a.key)}</div><div class="l">${a.label}</div></div>
+        <div class="split"><span class="beruf">💼 ${count(a.key, 'beruf')}</span><span class="privat">🏠 ${count(a.key, 'privat')}</span></div>
+      </div>`).join('')}
+    </div>
+
+    <div class="st-tools">
+      <div class="filters" style="margin:0">
+        ${[['alle', 'Alle'], ['beruf', '💼 Beruflich'], ['privat', '🏠 Privat']].map(([k, l]) => `<button class="chip ${startPrefs.kind === k ? 'active' : ''}" data-kind="${k}">${l}</button>`).join('')}
+      </div>
+      <form class="quick-add" id="quickAdd">
+        <input class="input" id="qa-text" name="text" placeholder="Schnell eine Aufgabe notieren …" autocomplete="off" required>
+        <select class="input" id="qa-owner" name="owner" aria-label="Wohin">
+          <option value="__privat">🏠 Privat</option>
+          <option value="__beruf">💼 Beruflich (sonstige)</option>
+          <optgroup label="Spieler">${state.players.map(p => `<option value="${esc(p.id)}">${p.fav ? '★ ' : ''}${esc(fullName(p))}</option>`).join('')}</optgroup>
+        </select>
+        <input class="input" type="date" id="qa-due" name="due" title="Fällig am">
+        <label class="prio-toggle"><input type="checkbox" id="qa-prio" name="prio"> Wichtig</label>
+        <button class="btn primary" type="submit">+</button>
+      </form>
+    </div>
+
+    <div class="st-layout">
+      <div class="ampel-cols">
+        ${AMPEL.map(a => `<section class="amp-col ${a.key}">
+          <h2><span class="amp-light ${a.key}"></span>${a.label} <span class="n">${groups[a.key].length}</span></h2>
+          <p class="amp-hint">${a.hint}</p>
+          ${groups[a.key].length ? `<ul class="st-list">${groups[a.key].map(itemHTML).join('')}</ul>` : `<div class="empty small">${a.key === 'rot' ? 'Nichts Dringendes.' : 'Keine Aufgaben.'}</div>`}
+        </section>`).join('')}
+      </div>
+      <aside class="panel">
+        <div class="ev-head"><h2>Heute & morgen</h2><button class="btn small" data-add-ev='${esc(JSON.stringify({ date: t0 }))}'>+ Termin</button></div>
+        ${todayEv.length ? `<div class="ev-list" style="margin-top:10px">${todayEv.map(e => eventRowHTML(e)).join('')}</div>` : '<div class="empty small">Keine Termine heute und morgen.</div>'}
+        <a class="ev-more" href="#kalender" style="display:inline-block;margin-top:10px">Zum Kalender →</a>
+        <h3 class="mini">Legende</h3>
+        <ul class="plain legend">
+          <li><span class="sw beruf"></span>Beruflich</li>
+          <li><span class="sw privat"></span>Privat</li>
+          <li><span class="amp-light rot"></span>Rot: überfällig, heute fällig oder „Wichtig“</li>
+          <li><span class="amp-light gelb"></span>Gelb: fällig in den nächsten 7 Tagen</li>
+          <li><span class="amp-light gruen"></span>Grün: später oder ohne Datum</li>
+        </ul>
+      </aside>
+    </div>`;
+
+  app.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => {
+    startPrefs.kind = b.dataset.kind;
+    try { localStorage.setItem('todoapp.start', JSON.stringify(startPrefs)); } catch (e) {}
+    renderStart();
+  });
+  app.querySelectorAll('.st-item').forEach(li => {
+    const t = todoArray(li.dataset.owner).find(x => x.id === li.dataset.id);
+    li.querySelector('input').onchange = () => {
+      t.done = true; t.doneAt = Date.now(); li.classList.add('leaving'); save();
+      setTimeout(renderStart, 250); toast('Erledigt ✓');
+    };
+  });
+  const qa = document.getElementById('quickAdd');
+  try { const last = localStorage.getItem('todoapp.qaOwner'); if (last && qa.owner.querySelector(`option[value="${CSS.escape(last)}"]`)) qa.owner.value = last; } catch (e) {}
+  qa.onsubmit = e => {
+    e.preventDefault();
+    const fd = new FormData(qa); const text = fd.get('text').trim(); if (!text) return;
+    const owner = fd.get('owner');
+    const cat = owner === '__privat' ? 'sonstiges' : owner === '__beruf' ? 'allgemein' : 'allgemein';
+    todoArray(owner).push({ id: uid(), text, cat, due: fd.get('due') || '', prio: !!fd.get('prio'), done: false, created: Date.now() });
+    try { localStorage.setItem('todoapp.qaOwner', owner); } catch (e) {}
+    save(); renderStart(); document.getElementById('qa-text').focus(); toast('Aufgabe angelegt');
+  };
+  bindEventClicks();
+}
+
+/* =========================================================
+   Router (#start, #beruflich, #privat, #kalender, #s-<spieler>)
    ========================================================= */
 let lastRoute = null;
 function render() {
   sync.pendingRender = false;
-  const h = location.hash || '#beruflich';
-  const route = h.startsWith('#s-') ? 'spieler' : h === '#privat' ? 'privat' : h === '#kalender' ? 'kalender' : 'beruflich';
+  const h = location.hash || '#start';
+  const route = h.startsWith('#s-') ? 'spieler' : h === '#privat' ? 'privat' : h === '#kalender' ? 'kalender' : h === '#beruflich' ? 'beruflich' : 'start';
   const changed = h !== lastRoute;
   if (changed) { ui.filter = 'offen'; ui.cat = 'alle'; ui.sortMode = false; ui.keepOthersOpen = false; Object.keys(openCards).forEach(k => delete openCards[k]); }
   lastRoute = h;
@@ -1122,12 +1313,15 @@ function render() {
   if (route === 'spieler') renderPlayer(decodeURIComponent(h.slice(3)));
   else if (route === 'privat') renderPrivat();
   else if (route === 'kalender') renderKalender();
+  else if (route === 'start') renderStart();
   else renderBeruflich();
   if (changed) window.scrollTo(0, 0);
 }
 function updateCounts() {
   document.getElementById('cnt-beruf').textContent = openCount(allBerufTodos());
   document.getElementById('cnt-privat').textContent = openCount(state.privat.todos);
+  document.getElementById('cnt-start').textContent = [...allBerufTodos(), ...state.privat.todos].filter(t => !t.done && (t.prio || (t.due && dueInfo(t.due).diff <= 0))).length;
+  document.getElementById('cnt-start').title = 'Dringende Aufgaben';
   const t0 = ymd(today()); document.getElementById('cnt-kal').textContent = state.termine.filter(e => e.date === t0).length;
   document.getElementById('cnt-kal').title = 'Termine heute';
 }

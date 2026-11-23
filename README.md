@@ -6,6 +6,9 @@ Einfache ToDo-App mit zwei getrennten Bereichen: **Beruflich** und **Privat**.
 `index.html` im Browser öffnen – fertig. Keine Installation, kein Server nötig.
 
 ## Funktionen
+- **Start:** alle offenen Aufgaben (beruflich blau, privat violett) nach Ampel sortiert –
+  Rot = überfällig, heute fällig oder „Wichtig“, Gelb = fällig in 7 Tagen, Grün = später oder ohne Datum.
+  Mit Schnelleingabe und den Terminen von heute und morgen.
 - **Beruflich:** Kachel für jeden betreuten Spieler. Ein Klick öffnet die Spielerseite mit
   - Übersicht zu Versicherungen, Wohnung, Adresse & Kontakt, Steuer, Auto, Familie (Felder + Notizen)
   - eigenen Aufgaben, jeweils einem Bereich zugeordnet, mit Fälligkeitsdatum und „Wichtig“-Markierung

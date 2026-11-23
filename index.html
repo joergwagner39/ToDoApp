@@ -1330,6 +1330,7 @@ function renderStart() {
 const ai = { busy: false, input: '', result: null, error: '', ctl: null };
 let sampleFn;   // undefined = noch unbekannt, null = nicht verfügbar
 (async () => {
+  await new Promise(r => setTimeout(r, 0));   // erst nach dem ersten Zeichnen
   try { sampleFn = window.claude && window.claude.use ? await window.claude.use('sample') : null; } catch (e) { sampleFn = null; }
   if (location.hash === '' || location.hash === '#start') safeRender();
 })();

@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ToDo – Beruflich & Privat</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface-2: #f8f9fb;
+    --border: #e3e6ea;
+    --text: #1c2027;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-soft: #e8efff;
+    --privat: #0f9d76;
+    --privat-soft: #e3f6ef;
+    --danger: #dc2626;
+    --danger-soft: #fdecec;
+    --warn: #d97706;
+    --warn-soft: #fdf3e2;
+    --ok: #16a34a;
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.08);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418;
+      --surface: #1a1e24;
+      --surface-2: #20252c;
+      --border: #2c333c;
+      --text: #e7eaee;
+      --muted: #9aa3ae;
+      --accent: #6b9bff;
+      --accent-soft: #1d2a45;
+      --privat: #3fcf9f;
+      --privat-soft: #15332a;
+      --danger: #f87171;
+      --danger-soft: #3a1f1f;
+      --warn: #fbbf24;
+      --warn-soft: #3a2e15;
+      --ok: #4ade80;
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: inherit; }
+
+  /* ---------- Header ---------- */
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner {
+    max-width: 1200px; margin: 0 auto; padding: 12px 16px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .brand { font-weight: 700; font-size: 18px; letter-spacing: -.01em; margin-right: auto; }
+  .brand span { color: var(--muted); font-weight: 500; }
+  .tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 10px; border: 1px solid var(--border); }
+  .tab {
+    border: 0; background: transparent; padding: 7px 16px; border-radius: 7px;
+    cursor: pointer; font-weight: 600; color: var(--muted);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .tab .count { font-size: 12px; background: var(--border); color: var(--text); border-radius: 999px; padding: 0 7px; }
+  .tab.active.beruf { background: var(--accent); color: #fff; }
+  .tab.active.privat { background: var(--privat); color: #fff; }
+  .tab.active .count { background: rgba(255,255,255,.25); color: #fff; }
+  .menu-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 10px; cursor: pointer; color: var(--muted); }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.02em; }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+
+  /* ---------- Stats ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+  .stat .v { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+  .stat .l { color: var(--muted); font-size: 13px; }
+  .stat.danger .v { color: var(--danger); }
+  .stat.warn .v { color: var(--warn); }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .toolbar .grow { flex: 1; min-width: 180px; }
+  .input, select.input {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 9px;
+    background: var(--surface); outline: none;
+  }
+  .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .btn {
+    border: 1px solid var(--border); background: var(--surface); padding: 9px 14px;
+    border-radius: 9px; cursor: pointer; font-weight: 600; white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.05); }
+  .privat-page .btn.primary { background: var(--privat); border-color: var(--privat); }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn.danger { color: var(--danger); }
+
+  /* ---------- Layout ---------- */
+  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+
+  /* ---------- Player tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px; cursor: pointer; box-shadow: var(--shadow); text-decoration: none;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .tile:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .tile-head { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%; flex: none;
+    display: grid; place-items: center; font-weight: 700; font-size: 15px; color: #fff;
+  }
+  .tile-name { font-weight: 700; line-height: 1.2; }
+  .tile-name small { display: block; font-weight: 500; color: var(--muted); font-size: 13px; }
+  .tile-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); font-weight: 600; }
+  .pill.open { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .pill.over { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+  .pill.done { background: transparent; }
+  .areas { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+  .area-dot { text-align: center; font-size: 10px; color: var(--muted); }
+  .area-dot i { display: block; height: 5px; border-radius: 3px; background: var(--border); margin-bottom: 3px; }
+  .area-dot.full i { background: var(--ok); }
+  .area-dot.part i { background: var(--warn); }
+  .area-dot.has-todo { color: var(--accent); font-weight: 700; }
+
+  /* ---------- Todo list ---------- */
+  .add-form { display: grid; grid-template-columns: 1fr 160px 150px auto auto; gap: 8px; margin-bottom: 14px; }
+  .prio-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 600; user-select: none; background: var(--surface); }
+  .prio-toggle input { accent-color: var(--danger); }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .chip { border: 1px solid var(--border); background: var(--surface); padding: 4px 11px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .chip.active { background: var(--text); color: var(--surface); border-color: var(--text); }
+  .todos { list-style: none; margin: 0; padding: 0; }
+  .todo {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start;
+    padding: 10px 4px; border-bottom: 1px solid var(--border);
+  }
+  .todo:last-child { border-bottom: 0; }
+  .todo input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
+  .privat-page .todo input[type=checkbox] { accent-color: var(--privat); }
+  .todo-text { word-break: break-word; cursor: text; }
+  .todo.done .todo-text { text-decoration: line-through; color: var(--muted); }
+  .todo-sub { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .tag { font-size: 11.5px; padding: 1px 7px; border-radius: 5px; font-weight: 600; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+  .tag.due.over { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+  .tag.due.soon { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+  .tag.prio { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+  .tag.who { background: var(--accent-soft); color: var(--accent); border-color: transparent; text-decoration: none; }
+  .icon-btn { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 2px 6px; border-radius: 6px; font-size: 16px; opacity: .5; }
+  .todo:hover .icon-btn, .icon-btn:focus { opacity: 1; }
+  .icon-btn:hover { background: var(--surface-2); color: var(--danger); }
+  .empty { color: var(--muted); text-align: center; padding: 24px 8px; font-size: 14px; }
+  .edit-input { width: 100%; padding: 4px 8px; border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); }
+
+  /* ---------- Player detail ---------- */
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-weight: 600; margin-bottom: 14px; }
+  .back:hover { color: var(--text); }
+  .player-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .player-head .avatar { width: 60px; height: 60px; font-size: 21px; }
+  .player-head .grow { flex: 1; }
+  .progress { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 8px; max-width: 320px; }
+  .progress b { display: block; height: 100%; background: var(--ok); }
+  .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; align-items: start; }
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .info-card summary { list-style: none; cursor: pointer; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .info-card summary::-webkit-details-marker { display: none; }
+  .info-card .ic { font-size: 20px; }
+  .info-card .t { font-weight: 700; flex: 1; }
+  .info-card .t small { display: block; font-weight: 500; font-size: 12px; color: var(--muted); }
+  .info-card .chev { color: var(--muted); transition: transform .15s; }
+  .info-card[open] .chev { transform: rotate(90deg); }
+  .info-body { padding: 0 14px 14px; display: grid; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+  .field .input { padding: 7px 10px; }
+  textarea.input { resize: vertical; min-height: 60px; }
+  .status { width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex: none; }
+  .status.full { background: var(--ok); }
+  .status.part { background: var(--warn); }
+  .info-open-todos { font-size: 12px; color: var(--accent); font-weight: 600; }
+
+  /* ---------- Upcoming ---------- */
+  .up-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .up-item:last-child { border-bottom: 0; }
+  .up-item .avatar { width: 30px; height: 30px; font-size: 11px; }
+  .up-item .x { flex: 1; min-width: 0; }
+  .up-item .x div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .up-item .x small { color: var(--muted); }
+
+  /* ---------- Private groups ---------- */
+  .groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .group h3 { margin: 0 0 6px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .group h3 .n { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 600; }
+
+  .menu { position: absolute; right: 16px; top: 56px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px; display: none; z-index: 20; min-width: 220px; }
+  .menu.show { display: block; }
+  .menu button { display: block; width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+  .menu button:hover { background: var(--surface-2); }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .info-grid { grid-template-columns: 1fr; }
+    .add-form { grid-template-columns: 1fr 1fr; }
+    .add-form .input:first-child { grid-column: 1 / -1; }
+    .brand span { display: none; }
+    .top-inner { gap: 8px; flex-wrap: nowrap; }
+    .tab { padding: 7px 9px; white-space: nowrap; gap: 5px; }
+    .brand { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">ToDo <span>· Übersicht</span></div>
+    <nav class="tabs">
+      <button class="tab beruf" data-go="#/beruflich">💼 Beruflich <span class="count" id="cnt-beruf">0</span></button>
+      <button class="tab privat" data-go="#/privat">🏠 Privat <span class="count" id="cnt-privat">0</span></button>
+    </nav>
+    <button class="menu-btn" id="menuBtn" title="Daten">⋯</button>
+  </div>
+  <div class="menu" id="menu">
+    <button id="exportBtn">⬇︎ Backup exportieren (JSON)</button>
+    <button id="importBtn">⬆︎ Backup importieren</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<script>
+/* =========================================================
+   Daten & Konfiguration
+   ========================================================= */
+const STORAGE_KEY = 'todoapp.v1';
+
+const PLAYERS = [
+  ['Eric Maxim', 'Choupo-Moting'],
+  ['Noah', 'Katterbach'],
+  ['Umut', 'Tohumcu'],
+  ['Kelven', 'Frees'],
+  ['Franjo', 'Ivanovic'],
+  ['Bambasé', 'Conté'],
+  ['Fisnik', 'Asllani'],
+  ['Noah', 'Wagner'],
+  ['Guilherme', 'Ramos'],
+  ['Elias', 'Benkara'],
+  ['David', 'Wurie'],
+  ['Rayan', 'Zidane'],
+  ['Salvatore', 'Mule'],
+  ['Yasin', 'Chebil'],
+  ['Raif', 'Adam'],
+  ['Malik', 'Kassassir'],
+  ['Piet', 'Scobel'],
+];
+
+// Bereiche pro Spieler – jeweils mit Feldern
+const AREAS = [
+  { key: 'versicherung', label: 'Versicherungen', short: 'Vers.', icon: '🛡️', fields: [
+    ['kranken', 'Krankenversicherung'], ['haftpflicht', 'Haftpflicht'],
+    ['bu', 'Berufsunfähigkeit / Sportinvalidität'], ['hausrat', 'Hausrat'],
+    ['notiz', 'Notizen', 'area'] ] },
+  { key: 'wohnung', label: 'Wohnung', short: 'Whg.', icon: '🏢', fields: [
+    ['status', 'Status (Miete / Eigentum / Suche)'], ['vermieter', 'Vermieter / Makler'],
+    ['miete', 'Miete / Kosten'], ['vertrag', 'Vertragsbeginn / Kündigungsfrist'],
+    ['notiz', 'Notizen', 'area'] ] },
+  { key: 'adresse', label: 'Adresse & Kontakt', short: 'Adr.', icon: '📍', fields: [
+    ['strasse', 'Straße & Hausnr.'], ['ort', 'PLZ & Ort'],
+    ['telefon', 'Telefon'], ['email', 'E-Mail'],
+    ['notiz', 'Notizen', 'area'] ] },
+  { key: 'steuer', label: 'Steuer', short: 'Steuer', icon: '🧾', fields: [
+    ['berater', 'Steuerberater'], ['steuerid', 'Steuer-ID'],
+    ['finanzamt', 'Finanzamt'], ['erklaerung', 'Letzte Steuererklärung'],
+    ['notiz', 'Notizen', 'area'] ] },
+  { key: 'auto', label: 'Auto', short: 'Auto', icon: '🚗', fields: [
+    ['fahrzeug', 'Fahrzeug'], ['kennzeichen', 'Kennzeichen'],
+    ['vertrag', 'Leasing / Kauf (bis)'], ['tuev', 'TÜV / Service fällig'],
+    ['notiz', 'Notizen', 'area'] ] },
+  { key: 'familie', label: 'Familie', short: 'Fam.', icon: '👨‍👩‍👧', fields: [
+    ['partner', 'Partner/in'], ['kinder', 'Kinder'],
+    ['eltern', 'Eltern / Angehörige'], ['notfall', 'Notfallkontakt'],
+    ['notiz', 'Notizen', 'area'] ] },
+];
+const PLAYER_CATS = [{ key: 'allgemein', label: 'Allgemein', icon: '📌' }, ...AREAS];
+
+const PRIVATE_CATS = [
+  { key: 'haushalt', label: 'Haushalt', icon: '🧹' },
+  { key: 'finanzen', label: 'Finanzen', icon: '💶' },
+  { key: 'gesundheit', label: 'Gesundheit & Sport', icon: '💪' },
+  { key: 'familie', label: 'Familie & Freunde', icon: '❤️' },
+  { key: 'termine', label: 'Termine', icon: '📅' },
+  { key: 'einkauf', label: 'Einkaufen', icon: '🛒' },
+  { key: 'sonstiges', label: 'Sonstiges', icon: '✨' },
+];
+
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function emptyInfo() {
+  const info = {};
+  AREAS.forEach(a => { info[a.key] = {}; a.fields.forEach(([k]) => info[a.key][k] = ''); });
+  return info;
+}
+function newPlayer(first, last) {
+  return { id: slug(first + ' ' + last) || uid(), first, last, info: emptyInfo(), todos: [] };
+}
+function defaultState() {
+  return { version: 1, players: PLAYERS.map(([f, l]) => newPlayer(f, l)), privat: { todos: [] } };
+}
+
+let state;
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    state = raw ? JSON.parse(raw) : defaultState();
+  } catch (e) { state = defaultState(); }
+  // fehlende Felder ergänzen
+  state.players.forEach(p => {
+    p.info = p.info || {};
+    AREAS.forEach(a => { p.info[a.key] = Object.assign(Object.fromEntries(a.fields.map(([k]) => [k, ''])), p.info[a.key] || {}); });
+    p.todos = p.todos || [];
+  });
+  state.privat = state.privat || { todos: [] };
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  updateCounts();
+}
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+function dueInfo(due) {
+  if (!due) return null;
+  const d = new Date(due + 'T00:00:00');
+  const diff = Math.round((d - today()) / 86400000);
+  let label;
+  if (diff === 0) label = 'Heute';
+  else if (diff === 1) label = 'Morgen';
+  else if (diff === -1) label = 'Gestern';
+  else label = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: diff > 300 || diff < -300 ? '2-digit' : undefined });
+  return { diff, label, cls: diff < 0 ? 'over' : diff <= 3 ? 'soon' : '' };
+}
+const isOverdue = t => !t.done && t.due && dueInfo(t.due).diff < 0;
+const isThisWeek = t => !t.done && t.due && (d => d >= 0 && d <= 7)(dueInfo(t.due).diff);
+function sortTodos(list) {
+  return [...list].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (!!a.prio !== !!b.prio) return a.prio ? -1 : 1;
+    if (a.due && b.due) return a.due.localeCompare(b.due);
+    if (a.due) return -1; if (b.due) return 1;
+    return (b.created || 0) - (a.created || 0);
+  });
+}
+const COLORS = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#0891b2', '#16a34a', '#ca8a04', '#4f46e5', '#0d9488', '#be123c'];
+function colorFor(id) { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; }
+const initials = p => ((p.first[0] || '') + (p.last[0] || '')).toUpperCase();
+const avatar = p => `<div class="avatar" style="background:${colorFor(p.id)}">${esc(initials(p))}</div>`;
+const fullName = p => `${p.first} ${p.last}`;
+function areaStatus(p, a) {
+  const keys = a.fields.filter(f => f[2] !== 'area').map(f => f[0]);
+  const filled = keys.filter(k => (p.info[a.key][k] || '').trim()).length;
+  return { filled, total: keys.length, cls: filled === 0 ? '' : filled === keys.length ? 'full' : 'part' };
+}
+const openCount = list => list.filter(t => !t.done).length;
+const findPlayer = id => state.players.find(p => p.id === id);
+const allPlayerTodos = () => state.players.flatMap(p => p.todos.map(t => ({ ...t, player: p })));
+
+/* =========================================================
+   Todo-Komponente (gemeinsam für Spieler & Privat)
+   ========================================================= */
+const ui = { filter: 'offen', cat: 'alle', search: '' };
+
+function todoListHTML(list, cats, opts = {}) {
+  if (!list.length) return `<div class="empty">${opts.emptyText || 'Keine Aufgaben – alles erledigt 🎉'}</div>`;
+  return `<ul class="todos">${sortTodos(list).map(t => {
+    const c = cats.find(c => c.key === t.cat);
+    const d = dueInfo(t.due);
+    const who = opts.showPlayer && t.player ? `<a class="tag who" href="#/spieler/${t.player.id}">${esc(fullName(t.player))}</a>` : '';
+    return `<li class="todo ${t.done ? 'done' : ''}" data-id="${t.id}" data-owner="${t.player ? t.player.id : opts.owner || ''}">
+      <input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Erledigt">
+      <div>
+        <div class="todo-text" title="Doppelklick zum Bearbeiten">${esc(t.text)}</div>
+        <div class="todo-sub">
+          ${who}
+          ${c && !opts.hideCat ? `<span class="tag">${c.icon} ${esc(c.label)}</span>` : ''}
+          ${t.prio ? `<span class="tag prio">! Wichtig</span>` : ''}
+          ${d ? `<span class="tag due ${t.done ? '' : d.cls}">📅 ${d.label}</span>` : ''}
+        </div>
+      </div>
+      <button class="icon-btn" data-del title="Löschen">✕</button>
+    </li>`;
+  }).join('')}</ul>`;
+}
+
+function addFormHTML(cats, defaultCat) {
+  return `<form class="add-form" id="addForm">
+    <input class="input" name="text" placeholder="Neue Aufgabe …" autocomplete="off" required>
+    <select class="input" name="cat">${cats.map(c => `<option value="${c.key}" ${c.key === defaultCat ? 'selected' : ''}>${c.icon} ${c.label}</option>`).join('')}</select>
+    <input class="input" type="date" name="due" title="Fällig am">
+    <label class="prio-toggle" title="Wichtig"><input type="checkbox" name="prio"> Wichtig</label>
+    <button class="btn primary" type="submit">Hinzufügen</button>
+  </form>`;
+}
+
+function filterHTML(cats, list) {
+  const n = { offen: openCount(list), erledigt: list.length - openCount(list), alle: list.length };
+  return `<div class="filters">
+    ${['offen', 'erledigt', 'alle'].map(f => `<button class="chip ${ui.filter === f ? 'active' : ''}" data-filter="${f}">${f[0].toUpperCase() + f.slice(1)} (${n[f]})</button>`).join('')}
+    <span style="width:8px"></span>
+    <button class="chip ${ui.cat === 'alle' ? 'active' : ''}" data-cat="alle">Alle Bereiche</button>
+    ${cats.filter(c => list.some(t => t.cat === c.key)).map(c => `<button class="chip ${ui.cat === c.key ? 'active' : ''}" data-cat="${c.key}">${c.icon} ${c.label}</button>`).join('')}
+  </div>`;
+}
+function applyFilter(list) {
+  return list.filter(t => (ui.filter === 'alle' || (ui.filter === 'offen' ? !t.done : t.done)) && (ui.cat === 'alle' || t.cat === ui.cat));
+}
+
+function todoArray(owner) {
+  return owner === '__privat' ? state.privat.todos : (findPlayer(owner) || {}).todos;
+}
+
+/* =========================================================
+   Seiten
+   ========================================================= */
+const app = document.getElementById('app');
+
+function renderBeruflich() {
+  const all = allPlayerTodos();
+  const open = all.filter(t => !t.done);
+  const q = ui.search.trim().toLowerCase();
+  const players = state.players.filter(p => !q || fullName(p).toLowerCase().includes(q));
+  const upcoming = sortTodos(open.filter(t => t.due || t.prio)).slice(0, 8);
+
+  app.innerHTML = `
+    <h1>Beruflich</h1>
+    <p class="sub">${state.players.length} Spieler in Betreuung · Klick auf eine Kachel öffnet die Spielerseite</p>
+    <div class="stats">
+      <div class="stat"><div class="v">${state.players.length}</div><div class="l">Spieler</div></div>
+      <div class="stat"><div class="v">${open.length}</div><div class="l">Offene Aufgaben</div></div>
+      <div class="stat warn"><div class="v">${open.filter(isThisWeek).length}</div><div class="l">Fällig in 7 Tagen</div></div>
+      <div class="stat danger"><div class="v">${open.filter(isOverdue).length}</div><div class="l">Überfällig</div></div>
+    </div>
+    <div class="layout">
+      <section>
+        <div class="toolbar">
+          <input class="input grow" id="search" placeholder="🔍 Spieler suchen …" value="${esc(ui.search)}">
+          <button class="btn" id="addPlayer">+ Spieler</button>
+        </div>
+        <div class="tiles">
+          ${players.map(p => {
+            const o = openCount(p.todos), over = p.todos.filter(isOverdue).length, done = p.todos.length - o;
+            return `<a class="tile" href="#/spieler/${p.id}">
+              <div class="tile-head">${avatar(p)}<div class="tile-name">${esc(p.last)}<small>${esc(p.first)}</small></div></div>
+              <div class="tile-meta">
+                <span class="pill ${o ? 'open' : ''}">${o} offen</span>
+                ${over ? `<span class="pill over">${over} überfällig</span>` : ''}
+                ${done ? `<span class="pill done">✓ ${done}</span>` : ''}
+              </div>
+              <div class="areas">${AREAS.map(a => {
+                const s = areaStatus(p, a); const hasTodo = p.todos.some(t => !t.done && t.cat === a.key);
+                return `<div class="area-dot ${s.cls} ${hasTodo ? 'has-todo' : ''}" title="${a.label}: ${s.filled}/${s.total} Felder${hasTodo ? ' · offene Aufgaben' : ''}"><i></i>${a.short}</div>`;
+              }).join('')}</div>
+            </a>`;
+          }).join('') || '<div class="empty">Kein Spieler gefunden.</div>'}
+        </div>
+      </section>
+      <aside class="panel">
+        <h2>Als Nächstes fällig</h2>
+        ${upcoming.length ? upcoming.map(t => {
+          const d = dueInfo(t.due);
+          return `<a class="up-item" href="#/spieler/${t.player.id}">${avatar(t.player)}
+            <div class="x"><div>${t.prio ? '❗ ' : ''}${esc(t.text)}</div><small>${esc(fullName(t.player))}</small></div>
+            ${d ? `<span class="tag due ${d.cls}">${d.label}</span>` : ''}</a>`;
+        }).join('') : '<div class="empty">Keine fälligen oder wichtigen Aufgaben.</div>'}
+        <p class="sub" style="margin:14px 0 0;font-size:12.5px">Legende Kachel: <b style="color:var(--ok)">grün</b> = Bereich vollständig, <b style="color:var(--warn)">gelb</b> = teilweise, grau = leer, <b style="color:var(--accent)">blaue Schrift</b> = offene Aufgabe im Bereich.</p>
+      </aside>
+    </div>`;
+
+  const s = document.getElementById('search');
+  s.addEventListener('input', e => {
+    ui.search = e.target.value; const pos = e.target.selectionStart;
+    renderBeruflich(); const n = document.getElementById('search'); n.focus(); n.setSelectionRange(pos, pos);
+  });
+  document.getElementById('addPlayer').onclick = () => {
+    const name = prompt('Name des Spielers (Vorname Nachname):');
+    if (!name || !name.trim()) return;
+    const parts = name.trim().split(/\s+/);
+    const last = parts.length > 1 ? parts.pop() : '';
+    const p = newPlayer(parts.join(' '), last);
+    if (findPlayer(p.id)) p.id += '-' + uid().slice(0, 4);
+    state.players.push(p); save(); location.hash = '#/spieler/' + p.id;
+  };
+}
+
+function renderPlayer(id) {
+  const p = findPlayer(id);
+  if (!p) { location.hash = '#/beruflich'; return; }
+  const total = p.todos.length, done = total - openCount(p.todos);
+  const list = applyFilter(p.todos);
+
+  app.innerHTML = `
+    <a class="back" href="#/beruflich">← Alle Spieler</a>
+    <div class="player-head">
+      ${avatar(p)}
+      <div class="grow">
+        <h1>${esc(fullName(p))}</h1>
+        <div style="color:var(--muted)">${openCount(p.todos)} offen · ${done} erledigt${p.todos.filter(isOverdue).length ? ` · <b style="color:var(--danger)">${p.todos.filter(isOverdue).length} überfällig</b>` : ''}</div>
+        <div class="progress"><b style="width:${total ? Math.round(done / total * 100) : 0}%"></b></div>
+      </div>
+      <button class="btn ghost" id="renamePlayer">Umbenennen</button>
+      <button class="btn ghost danger" id="deletePlayer">Entfernen</button>
+    </div>
+
+    <h2>Übersicht</h2>
+    <div class="info-grid">
+      ${AREAS.map(a => {
+        const s = areaStatus(p, a); const o = p.todos.filter(t => !t.done && t.cat === a.key).length;
+        return `<details class="info-card" data-area="${a.key}">
+          <summary>
+            <span class="ic">${a.icon}</span>
+            <span class="t">${a.label}<small>${s.filled}/${s.total} Felder ausgefüllt${o ? ` · <span class="info-open-todos">${o} offene Aufgabe${o > 1 ? 'n' : ''}</span>` : ''}</small></span>
+            <span class="status ${s.cls}"></span><span class="chev">›</span>
+          </summary>
+          <div class="info-body">
+            ${a.fields.map(([k, label, type]) => `<div class="field"><label>${label}</label>${type === 'area'
+              ? `<textarea class="input" data-field="${k}">${esc(p.info[a.key][k])}</textarea>`
+              : `<input class="input" data-field="${k}" value="${esc(p.info[a.key][k])}">`}</div>`).join('')}
+          </div>
+        </details>`;
+      }).join('')}
+    </div>
+
+    <div class="panel">
+      <h2>Aufgaben</h2>
+      ${addFormHTML(PLAYER_CATS, ui.cat !== 'alle' ? ui.cat : 'allgemein')}
+      ${filterHTML(PLAYER_CATS, p.todos)}
+      ${todoListHTML(list, PLAYER_CATS, { owner: p.id, emptyText: total ? 'Keine Aufgaben in dieser Ansicht.' : 'Noch keine Aufgaben für ' + esc(p.first) + '.' })}
+    </div>`;
+
+  // Info-Felder speichern
+  app.querySelectorAll('.info-card').forEach(card => {
+    const a = AREAS.find(a => a.key === card.dataset.area);
+    card.addEventListener('toggle', () => openCards[a.key] = card.open);
+    if (openCards[a.key]) card.open = true;
+    card.querySelectorAll('[data-field]').forEach(inp => inp.addEventListener('input', () => {
+      p.info[a.key][inp.dataset.field] = inp.value; save();
+      const s = areaStatus(p, a);
+      card.querySelector('.status').className = 'status ' + s.cls;
+      card.querySelector('.t small').firstChild.textContent = `${s.filled}/${s.total} Felder ausgefüllt`;
+    }));
+  });
+  document.getElementById('deletePlayer').onclick = () => {
+    if (!confirm(`${fullName(p)} inkl. aller Aufgaben und Daten entfernen?`)) return;
+    state.players = state.players.filter(x => x !== p); save(); location.hash = '#/beruflich';
+  };
+  document.getElementById('renamePlayer').onclick = () => {
+    const f = prompt('Vorname:', p.first); if (f === null) return;
+    const l = prompt('Nachname:', p.last); if (l === null) return;
+    p.first = f.trim(); p.last = l.trim(); save(); render();
+  };
+  bindTodoEvents(p.id);
+}
+const openCards = {};
+
+function renderPrivat() {
+  const list = state.privat.todos;
+  const open = list.filter(t => !t.done);
+  const filtered = applyFilter(list);
+
+  app.innerHTML = `<div class="privat-page">
+    <h1>Privat</h1>
+    <p class="sub">Persönliche Aufgaben – getrennt vom Beruflichen, nach Bereichen sortiert.</p>
+    <div class="stats">
+      <div class="stat"><div class="v">${open.length}</div><div class="l">Offen</div></div>
+      <div class="stat warn"><div class="v">${open.filter(isThisWeek).length}</div><div class="l">Fällig in 7 Tagen</div></div>
+      <div class="stat danger"><div class="v">${open.filter(isOverdue).length}</div><div class="l">Überfällig</div></div>
+      <div class="stat"><div class="v">${list.length - open.length}</div><div class="l">Erledigt</div></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
+      ${addFormHTML(PRIVATE_CATS, ui.cat !== 'alle' ? ui.cat : 'haushalt')}
+      ${filterHTML(PRIVATE_CATS, list)}
+    </div>
+    <div class="groups">
+      ${PRIVATE_CATS.map(c => {
+        const items = filtered.filter(t => t.cat === c.key);
+        if (!items.length) return '';
+        return `<div class="panel group"><h3>${c.icon} ${c.label}<span class="n">${openCount(list.filter(t => t.cat === c.key))} offen</span></h3>
+          ${todoListHTML(items, PRIVATE_CATS, { owner: '__privat', hideCat: true })}</div>`;
+      }).join('') || `<div class="panel empty">${list.length ? 'Keine Aufgaben in dieser Ansicht.' : 'Noch keine privaten Aufgaben – oben einfach die erste eintragen.'}</div>`}
+    </div>
+  </div>`;
+  bindTodoEvents('__privat');
+}
+
+/* =========================================================
+   Events für Todo-Listen
+   ========================================================= */
+function bindTodoEvents(owner) {
+  const form = document.getElementById('addForm');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const text = (fd.get('text') || '').trim(); if (!text) return;
+    todoArray(owner).push({ id: uid(), text, cat: fd.get('cat'), due: fd.get('due') || '', prio: !!fd.get('prio'), done: false, created: Date.now() });
+    if (ui.filter === 'erledigt') ui.filter = 'offen';
+    save(); render();
+    document.querySelector('#addForm [name=text]').focus();
+  });
+
+  app.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { ui.filter = b.dataset.filter; render(); });
+  app.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { ui.cat = b.dataset.cat; render(); });
+
+  app.querySelectorAll('.todo').forEach(li => {
+    const arr = todoArray(li.dataset.owner || owner);
+    const t = arr.find(t => t.id === li.dataset.id);
+    li.querySelector('input[type=checkbox]').onchange = e => { t.done = e.target.checked; t.doneAt = t.done ? Date.now() : null; save(); render(); };
+    li.querySelector('[data-del]').onclick = () => { arr.splice(arr.indexOf(t), 1); save(); render(); };
+    const txt = li.querySelector('.todo-text');
+    txt.ondblclick = () => {
+      txt.innerHTML = `<input class="edit-input" value="${esc(t.text)}">`;
+      const inp = txt.querySelector('input'); inp.focus(); inp.select();
+      const commit = () => { const v = inp.value.trim(); if (v) t.text = v; save(); render(); };
+      inp.onblur = commit;
+      inp.onkeydown = e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.onblur = null; render(); } };
+    };
+  });
+}
+
+/* =========================================================
+   Router
+   ========================================================= */
+let lastRoute = '';
+function render() {
+  const h = location.hash || '#/beruflich';
+  const route = h.startsWith('#/spieler/') ? 'spieler' : h.startsWith('#/privat') ? 'privat' : 'beruflich';
+  const routeKey = h;
+  if (routeKey !== lastRoute) { ui.filter = 'offen'; ui.cat = 'alle'; if (route !== 'spieler') Object.keys(openCards).forEach(k => delete openCards[k]); }
+  const changed = routeKey !== lastRoute; lastRoute = routeKey;
+
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active',
+    (route === 'privat' && t.classList.contains('privat')) || (route !== 'privat' && t.classList.contains('beruf'))));
+
+  if (route === 'spieler') renderPlayer(decodeURIComponent(h.slice('#/spieler/'.length)));
+  else if (route === 'privat') renderPrivat();
+  else renderBeruflich();
+  if (changed) window.scrollTo(0, 0);
+}
+function updateCounts() {
+  document.getElementById('cnt-beruf').textContent = openCount(allPlayerTodos());
+  document.getElementById('cnt-privat').textContent = openCount(state.privat.todos);
+}
+
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => location.hash = b.dataset.go);
+window.addEventListener('hashchange', render);
+
+/* Backup */
+const menu = document.getElementById('menu');
+document.getElementById('menuBtn').onclick = e => { e.stopPropagation(); menu.classList.toggle('show'); };
+document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('show'); });
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `todo-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click(); URL.revokeObjectURL(a.href); menu.classList.remove('show');
+};
+document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!Array.isArray(data.players)) throw new Error();
+    if (!confirm('Aktuelle Daten durch das Backup ersetzen?')) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); load(); save(); render();
+  } catch { alert('Die Datei ist kein gültiges Backup.'); }
+  e.target.value = ''; menu.classList.remove('show');
+};
+
+load(); updateCounts(); render();
+</script>
+</body>
+</html>
